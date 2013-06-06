@@ -22,7 +22,7 @@ public class XmlReader {
     
     public XmlReader(String fileName) {
         SAXBuilder builder = new SAXBuilder();
-        File xmlFile = new File("c:\\file.xml");
+        File xmlFile = new File(fileName);
         try {
             document = (Document) builder.build(xmlFile);
         } catch (JDOMException ex) {

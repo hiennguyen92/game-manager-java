@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<root>
+    <DriverName>com.microsoft.sqlserver.jdbc.SQLServerDriver</DriverName>
+    <ConnectionString>jdbc:sqlserver://localhost:1433;databaseName=CARO</ConnectionString>
+    <UserName>admin</UserName>
+    <Password>admin</Password>
+</root>

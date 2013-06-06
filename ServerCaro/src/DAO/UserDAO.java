@@ -18,6 +18,7 @@ public class UserDAO {
     public static List<User> GetList(){
         List<User> users = null;
         sql = "select * from [USER]";
+        DataProvider dataProvider = new DataProvider();
         users = DataProvider.ExecuteQuery(sql);
         return users;
     }

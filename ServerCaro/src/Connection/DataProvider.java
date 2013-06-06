@@ -5,6 +5,7 @@
 package Connection;
 
 import DTO.User;
+import Xml.XmlReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -22,25 +23,31 @@ import java.util.logging.Logger;
  */
 public class DataProvider {
 
-    public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public static String connectionString = "jdbc:sqlserver://localhost:1433;databaseName=CARO";
-    public static String userName = "sa";
-    public static String password = "123456789";
-    public Connection getConnection(){
-         try {
+    public static String driverName = null;
+    public static String connectionString = null;
+    public static String userName = null;
+    public static String password = null;
+
+    public static Connection getConnection() {
+        try {
+            XmlReader reader = new XmlReader("Connection.xml");
+            driverName = reader.getString("DriverName");
+            connectionString = reader.getString("ConnectionString");
+            userName = reader.getString("UserName");
+            password = reader.getString("Password");
             Class.forName(driverName);
             Connection connection = DriverManager.getConnection(connectionString, userName, password);
             return connection;
-         } catch (Exception ex) {
+        } catch (Exception ex) {
             Logger.getLogger(DataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
-         return null;
+        return null;
     }
+
     public static List<User> ExecuteQuery(String sql) {
         List<User> users = new ArrayList<User>();
         try {
-            Class.forName(driverName);
-            Connection connection = DriverManager.getConnection(connectionString, userName, password);
+            Connection connection = getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
 
@@ -65,8 +72,7 @@ public class DataProvider {
 
     public static boolean ExecuteNonquery(String sql) {
         try {
-            Class.forName(driverName);
-            Connection connection = DriverManager.getConnection(connectionString, userName, password);
+            Connection connection = getConnection();
             Statement statement = connection.createStatement();
             statement.execute(sql);
             connection.close();
