@@ -214,7 +214,8 @@ public class ServerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTourActionPerformed
-        
+        Tournament a = new Tournament();
+        a.setVisible(true);
     }//GEN-LAST:event_btnTourActionPerformed
 
     private void btnUserInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserInfoActionPerformed
