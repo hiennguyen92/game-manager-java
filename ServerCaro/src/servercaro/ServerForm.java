@@ -55,7 +55,7 @@ public class ServerForm extends javax.swing.JFrame {
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
                     int idx = Server.getIndex(userName, password);
                     if (idx != -1) {
-                        Client exist = Server.getUser(userName);
+                        Client exist = Server.getClient(userName);
                         if (exist == null) {
                             Server.cSockets.add(new Client(client, Server.allUsers.get(idx)));
                             Server.cSockets.get(Server.cSockets.size() - 1).start();
@@ -130,6 +130,7 @@ public class ServerForm extends javax.swing.JFrame {
         });
 
         btnTour.setText("Tournament");
+        btnTour.setEnabled(false);
         btnTour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTourActionPerformed(evt);
@@ -198,6 +199,7 @@ public class ServerForm extends javax.swing.JFrame {
             getConnect.start();
             btnStart.setEnabled(false);
             btnStop.setEnabled(true);
+            btnTour.setEnabled(true);
         }
     }//GEN-LAST:event_btnStartActionPerformed
 
@@ -211,10 +213,11 @@ public class ServerForm extends javax.swing.JFrame {
         isRun = false;
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
+        btnTour.setEnabled(false);
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTourActionPerformed
-        Tournament a = new Tournament();
+        TournamentForm a = new TournamentForm();
         a.setVisible(true);
     }//GEN-LAST:event_btnTourActionPerformed
 

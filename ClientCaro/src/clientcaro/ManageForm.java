@@ -39,11 +39,12 @@ public class ManageForm extends javax.swing.JFrame {
         listUsers = new Vector<>();
         Thread listener = new Thread(listen);
         listener.start();
-        
+
     }
-    private void ShowAvatar(){
-       Icon ii = new ImageIcon(getClass().getResource("images.jpg"));
-       jLabelImage.setIcon(ii);
+
+    private void ShowAvatar() {
+        Icon ii = new ImageIcon(getClass().getResource("images.jpg"));
+        jLabelImage.setIcon(ii);
     }
     Runnable listen = new Runnable() {
         @Override
@@ -75,21 +76,20 @@ public class ManageForm extends javax.swing.JFrame {
                             Client.SendObj('2');
                             Client.SendObj(answer);
                             //trả lời yes thì hiện form chơi game
-                            if(result == JOptionPane.YES_OPTION){
+                            if (result == JOptionPane.YES_OPTION) {
                                 new PlayGameForm().setVisible(true);
                                 ManageForm.this.setVisible(false);
                             }
                             break;
                         //nhận kết quả lời mời
                         case '4':
-                            answer = (Answer)Client.GetObj();
-                            if(answer.Answer == JOptionPane.YES_OPTION){
+                            answer = (Answer) Client.GetObj();
+                            if (answer.Answer == JOptionPane.YES_OPTION) {
                                 new PlayGameForm().setVisible(true);
                                 ManageForm.this.setVisible(false);
-                            }
-                            else{
+                            } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
-                                "Rejected", JOptionPane.WARNING_MESSAGE);
+                                        "Rejected", JOptionPane.WARNING_MESSAGE);
                             }
                             break;
                         //nhận lời chat
@@ -292,10 +292,9 @@ public class ManageForm extends javax.swing.JFrame {
             String userName = (String) lUserOnline.getSelectedValue();
             Client.SendObj('1');
             Client.SendMsg(userName);
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(ManageForm.this, "Can't connect to server",
-                            "Can't connect", JOptionPane.WARNING_MESSAGE);;
+                    "Can't connect", JOptionPane.WARNING_MESSAGE);;
         }
     }//GEN-LAST:event_btnInviteActionPerformed
 
@@ -321,17 +320,17 @@ public class ManageForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSendActionPerformed
 
     private void btnBrowseImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrowseImageActionPerformed
-            JFileChooser chooser = new JFileChooser();
-         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-             "JPG & GIF Images", "jpg", "gif");
-         chooser.setFileFilter(filter);
-             int returnVal = chooser.showOpenDialog(this);
-         if(returnVal == JFileChooser.APPROVE_OPTION) {
-             String temp = chooser.getSelectedFile().toString();
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "JPG & GIF Images", "jpg", "gif");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String temp = chooser.getSelectedFile().toString();
             Icon ii = new ImageIcon(temp);
             jLabelImage.setIcon(ii);
-         }       
-  
+        }
+
     }//GEN-LAST:event_btnBrowseImageActionPerformed
 
     /**

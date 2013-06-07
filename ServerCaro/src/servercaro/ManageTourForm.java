@@ -4,52 +4,32 @@
  */
 package servercaro;
 
-import Connection.DataProvider;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import DTO.Tournament;
+import DTO.User;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author hieu
  */
-public class ManageTournament extends javax.swing.JFrame {
+public class ManageTourForm extends javax.swing.JFrame {
 
     /**
-     * Creates new form ManageTournament
+     * Creates new form ManageTourForm
      */
-    public ManageTournament() {
+    public ManageTourForm() {
         initComponents();
         ListAllUser();
         ShowAllUser();
     }
-    private void ListAllUser(){
-         try {           
-            String query = "Select TENGIAIDAU From TOURNAMENT";  
-            DataProvider a = new DataProvider();
-            Connection b = a.getConnection();
-            PreparedStatement pst = b.prepareStatement(query);
-            ResultSet rs = pst.executeQuery();
-            
-            if(rs !=  null){
-               while(rs.next()){
-                   String tengiaidau = rs.getString(1).toString();
-                   //String username = rs.getString(2).toString();
-                   jcomboGiaiDau.addItem(tengiaidau);
-               }
-            }
-            else{
-                JOptionPane.showMessageDialog(null , "Can not access database");
-            }
-            b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(UserInfo.class.getName()).log(Level.SEVERE, null, ex);
+
+    private void ListAllUser() {
+        jcomboGiaiDau.removeAll();
+        for (int i = 0; i < Server.tournaments.size(); i++) {
+            jcomboGiaiDau.addItem(Server.tournaments.get(i).name);
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -78,6 +58,7 @@ public class ManageTournament extends javax.swing.JFrame {
             }
         });
 
+        jlistUser.setEditable(false);
         jlistUser.setColumns(20);
         jlistUser.setRows(5);
         jScrollPane1.setViewportView(jlistUser);
@@ -112,11 +93,11 @@ public class ManageTournament extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jcomboAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44)
+                        .addGap(43, 43, 43)
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -144,95 +125,62 @@ public class ManageTournament extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    private void ShowAllUser(){
-        try {
-            String query2 = "Select UserName From [USER]";   
-            DataProvider a = new DataProvider();
-            Connection b = a.getConnection();
-            PreparedStatement pst = b.prepareStatement(query2);
-            ResultSet rs = pst.executeQuery();
-           
-               while(rs.next()){                       
-                   String username = rs.getString(1).toString();
-                   jcomboAddUser.addItem(username);
-               }
-               b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ManageTournament.class.getName()).log(Level.SEVERE, null, ex);
+
+    private void ShowAllUser() {
+        jcomboAddUser.removeAll();
+        for (int i = 0; i < Server.allUsers.size(); i++) {
+            jcomboAddUser.addItem(Server.allUsers.get(i).UserName);
         }
     }
     private void jcomboGiaiDauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcomboGiaiDauActionPerformed
-        try {
-            String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
-             String query = "Select ut.UserName From USER_TOURNAMENT ut,TOURNAMENT t Where t.MAGIAIDAU = ut.MAGIAIDAU and t.TENGIAIDAU = '" +tengiaidau + "'" ;  
-            
-                DataProvider a = new DataProvider();
-                Connection b = a.getConnection();
-                PreparedStatement pst = b.prepareStatement(query);
-                ResultSet rs = pst.executeQuery();
-                String setUser = "Danh Sach Users thuoc giai '" + tengiaidau + "' : " + "\n";
-                if(rs !=  null){
-                   while(rs.next()){                       
-                       String username = rs.getString(1).toString();
-                       setUser += "\t";
-                       setUser += username;
-                       setUser += "\n";
-                      
-                   }
-                   jlistUser.setText(setUser);
-                    
-                }
-                else{
-                    JOptionPane.showMessageDialog(null , "Can not access database");
-                }
-                b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ManageTournament.class.getName()).log(Level.SEVERE, null, ex);
+        Tournament tour = new Tournament();
+
+        String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
+        String setUser = "List of users in tournament '" + tengiaidau + "' : " + "\n";
+
+        for (int i = 0; i < Server.tournaments.size(); i++) {
+            if (Server.tournaments.get(i).name.equals(tengiaidau)) {
+                tour = Server.tournaments.get(i);
+                break;
+            }
         }
+
+        for (int i = 0; i < tour.users.size(); i++) {
+            String username = tour.users.get(i).UserName;
+            setUser += "\t";
+            setUser += username;
+            setUser += "\n";
+        }
+
+        jlistUser.setText(setUser);
+
     }//GEN-LAST:event_jcomboGiaiDauActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        try {
-            String user = jcomboAddUser.getSelectedItem().toString();
-            String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
-            String query2 = "Select MAGIAIDAU From TOURNAMENT Where TENGIAIDAU = '" + tengiaidau + "'"; 
-            
-            
-                DataProvider a = new DataProvider();
-                Connection b = a.getConnection();
-                PreparedStatement pst = b.prepareStatement(query2);
-                ResultSet rs = pst.executeQuery();
-                String magiaidau = "";
-                while(rs.next()){
-                     magiaidau = rs.getString(1).toString();
+        Tournament tour = new Tournament();
+        boolean result = false;
+
+        String userName = jcomboAddUser.getSelectedItem().toString();
+        String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
+
+        if (userName != null && tengiaidau != null) {
+
+            for (int i = 0; i < Server.tournaments.size(); i++) {
+                if (Server.tournaments.get(i).name.equals(tengiaidau)) {
+                    tour = Server.tournaments.get(i);
+                    result = tour.users.contains(userName);
+                    if (!result) {
+                        User user = Server.getUser(userName);
+                        Server.tournaments.get(i).users.add(user);
+                        JOptionPane.showMessageDialog(null, "Insert Successfully");
+                        jcomboGiaiDauActionPerformed(evt);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "The user is already existed");
+                    }
+                    break;
                 }
-                String query3 = "Select Count(*) From USER_TOURNAMENT Where UserName = '" + user + "' and MAGIAIDAU = '" + magiaidau + "'";
-                pst = b.prepareStatement(query3);
-                 rs = pst.executeQuery();  
-                 int count = 0;
-                 while(rs.next()){
-                     String temp = rs.getString(1).toString();
-                     count = Integer.parseInt(temp);
-                }
-                 if(count == 1){
-                     JOptionPane.showMessageDialog(null , "User này đã tồn tại trong giải đấu"); 
-                 }
-                 else{
-                            String query = "Insert into USER_TOURNAMENT values('"+user+"','"+magiaidau+"')";  
-                        pst = b.prepareStatement(query);
-                        int ketqua = pst.executeUpdate();
-                       if(ketqua ==  1){
-                          JOptionPane.showMessageDialog(null , "Insert Successfully"); 
-                          ListAllUser();
-                       }
-                       else{
-                           JOptionPane.showMessageDialog(null , "Can not access database");
-                       }
-                 }
-                
-                b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ManageTournament.class.getName()).log(Level.SEVERE, null, ex);
+            }    
+            
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
@@ -257,21 +205,20 @@ public class ManageTournament extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ManageTournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManageTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ManageTournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManageTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ManageTournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManageTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ManageTournament.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManageTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                //new ManageTournament().setVisible(true);
-                
+                //new ManageTourForm().setVisible(true);
             }
         });
     }

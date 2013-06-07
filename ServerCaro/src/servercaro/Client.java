@@ -78,7 +78,7 @@ public class Client extends Thread {
                     //nhận lời mời
                     case '1':
                         String userName = GetMsg();
-                        Client user = Server.getUser(userName);
+                        Client user = Server.getClient(userName);
                         //gửi lời mời tới người đó
                         user.SendObj('3');
                         user.SendMsg(cUser.UserName);
@@ -86,7 +86,7 @@ public class Client extends Thread {
                     //nhận trả lời lời mời
                     case '2':
                         Answer answer = (Answer)GetObj();
-                        user = Server.getUser(answer.UserName);
+                        user = Server.getClient(answer.UserName);
                         //gửi trả lời tới người đó
                         user.SendObj('4');
                         answer.UserName = cUser.UserName;
