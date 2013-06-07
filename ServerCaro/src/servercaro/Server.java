@@ -49,4 +49,13 @@ public class Server {
         }
         return null;
     }
+    
+    //lấy thông tin 1 tour
+    public static Tournament getTour(String name){
+        for(int i = 0; i < tournaments.size(); i++){
+            if(tournaments.get(i).name.equals(name))
+                return tournaments.get(i);
+        }
+        return null;
+    }
 }

@@ -125,7 +125,7 @@ public class LoginForm extends javax.swing.JFrame {
             if (Client.GetMsg().equals("success")) {
                 Client.cUser.UserName = userName;
                 new ManageForm().setVisible(true);
-                this.setVisible(false);
+                this.dispose();
             } else { //thất bại ko hiện
                 JOptionPane.showMessageDialog(this, "User name or password is invalid",
                         "Can't login", JOptionPane.WARNING_MESSAGE);

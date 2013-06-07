@@ -5,15 +5,12 @@
 package servercaro;
 
 import DAO.UserDAO;
-import DTO.User;
-import java.awt.Color;
+import DTO.Tournament;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +29,7 @@ public class ServerForm extends javax.swing.JFrame {
      */
     public ServerForm() {
         initComponents();
-        
+
         try {
             Server.sSocket = new ServerSocket(1234);
         } catch (IOException ex) {
@@ -67,6 +64,15 @@ public class ServerForm extends javax.swing.JFrame {
                                 //gửi thông tin những người đã đăng nhấp đến người mới đăng nhập
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendObj('1');
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(Server.cSockets.get(i).getUserName());
+                            }
+                            for (int i = 0; i < Server.tournaments.size(); i++) {
+                                Tournament tour = Server.tournaments.get(i);
+                                String msg = "";
+                                msg += tour.name + " (";
+                                msg += tour.users.size() + "\\";
+                                msg += tour.nPlayer + ")";                                
+                                Server.cSockets.get(Server.cSockets.size() - 1).SendObj('2');
+                                Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(msg);
                             }
                         } else {
                             out.writeUTF("fail");
@@ -217,7 +223,7 @@ public class ServerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTourActionPerformed
-        TournamentForm a = new TournamentForm();
+        ManageTourForm a = new ManageTourForm();
         a.setVisible(true);
     }//GEN-LAST:event_btnTourActionPerformed
 

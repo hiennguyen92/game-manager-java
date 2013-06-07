@@ -4,6 +4,7 @@
  */
 package servercaro;
 
+import DTO.Tournament;
 import DTO.User;
 import Data.DataType.*;
 import java.io.DataInputStream;
@@ -99,6 +100,29 @@ public class Client extends Thread {
                             user = Server.cSockets.get(i);
                             user.SendObj('5');
                             user.SendMsg(cUser.UserName + ": " + msg);
+                        }
+                        break;
+                    // nhận yêu cầu tham gia tour
+                    case '4':
+                        msg = GetMsg();
+                        String tourName = "";
+                        for(int i = msg.length()-1; i >= 0; i--){
+                            if(msg.charAt(i) == '('){
+                                tourName = msg.substring(0, i-1);
+                                break;
+                            }
+                        }
+                        Tournament tour = Server.getTour(tourName);
+                        SendObj('6');
+                        if(tour.users.size() == tour.nPlayer){
+                            SendMsg("full");
+                        }
+                        else if(tour.mPoint > cUser.Score){
+                            SendMsg("score");
+                        }
+                        else{
+                            tour.users.add(cUser);
+                            SendMsg("success");
                         }
                         break;
                 }

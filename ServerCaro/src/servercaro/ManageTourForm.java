@@ -6,6 +6,8 @@ package servercaro;
 
 import DTO.Tournament;
 import DTO.User;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -13,7 +15,8 @@ import javax.swing.JOptionPane;
  * @author hieu
  */
 public class ManageTourForm extends javax.swing.JFrame {
-
+    
+    boolean isRun = true;
     /**
      * Creates new form ManageTourForm
      */
@@ -21,7 +24,23 @@ public class ManageTourForm extends javax.swing.JFrame {
         initComponents();
         ListAllUser();
         ShowAllUser();
+        Thread listener = new Thread(listen);
+        listener.start();
     }
+    Runnable listen = new Runnable() {
+        @Override
+        public void run() {
+            while (isRun) {
+                if(jcomboGiaiDau.getSelectedIndex() != -1)
+                    ShowTourInfo();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    };
 
     private void ListAllUser() {
         jcomboGiaiDau.removeAll();
@@ -45,18 +64,13 @@ public class ManageTourForm extends javax.swing.JFrame {
         jlistUser = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jcomboAddUser = new javax.swing.JComboBox();
-        btnAdd = new javax.swing.JButton();
+        btnAddUser = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
+        btnAddTour = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Choose Tournament");
-
-        jcomboGiaiDau.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jcomboGiaiDauActionPerformed(evt);
-            }
-        });
 
         jlistUser.setEditable(false);
         jlistUser.setColumns(20);
@@ -65,10 +79,10 @@ public class ManageTourForm extends javax.swing.JFrame {
 
         jLabel2.setText("All User");
 
-        btnAdd.setText("Add");
-        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+        btnAddUser.setText("Add");
+        btnAddUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddActionPerformed(evt);
+                btnAddUserUserActionPerformed(evt);
             }
         });
 
@@ -79,47 +93,56 @@ public class ManageTourForm extends javax.swing.JFrame {
             }
         });
 
+        btnAddTour.setText("Add");
+        btnAddTour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddTourActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addComponent(jcomboGiaiDau, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcomboAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                .addGap(37, 37, 37)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jcomboAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 149, Short.MAX_VALUE)
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(138, 138, 138))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jcomboGiaiDau, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnAddTour)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(42, 42, 42)
+                .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jcomboGiaiDau, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(jcomboGiaiDau, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAddTour, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(23, 23, 23)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jcomboAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExit)
-                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(22, 22, 22))
         );
 
@@ -132,31 +155,26 @@ public class ManageTourForm extends javax.swing.JFrame {
             jcomboAddUser.addItem(Server.allUsers.get(i).UserName);
         }
     }
-    private void jcomboGiaiDauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcomboGiaiDauActionPerformed
-        Tournament tour = new Tournament();
+
+    private void ShowTourInfo() {
+        Tournament tour;
 
         String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
         String setUser = "List of users in tournament '" + tengiaidau + "' : " + "\n";
 
-        for (int i = 0; i < Server.tournaments.size(); i++) {
-            if (Server.tournaments.get(i).name.equals(tengiaidau)) {
-                tour = Server.tournaments.get(i);
-                break;
-            }
-        }
+        tour = Server.getTour(tengiaidau);
 
         for (int i = 0; i < tour.users.size(); i++) {
             String username = tour.users.get(i).UserName;
-            setUser += "\t";
+            setUser += (i + 1) + "\t";
             setUser += username;
             setUser += "\n";
         }
 
         jlistUser.setText(setUser);
+    }
 
-    }//GEN-LAST:event_jcomboGiaiDauActionPerformed
-
-    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+    private void btnAddUserUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddUserUserActionPerformed
         Tournament tour = new Tournament();
         boolean result = false;
 
@@ -164,29 +182,29 @@ public class ManageTourForm extends javax.swing.JFrame {
         String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
 
         if (userName != null && tengiaidau != null) {
+            tour = Server.getTour(tengiaidau);
 
-            for (int i = 0; i < Server.tournaments.size(); i++) {
-                if (Server.tournaments.get(i).name.equals(tengiaidau)) {
-                    tour = Server.tournaments.get(i);
-                    result = tour.users.contains(userName);
-                    if (!result) {
-                        User user = Server.getUser(userName);
-                        Server.tournaments.get(i).users.add(user);
-                        JOptionPane.showMessageDialog(null, "Insert Successfully");
-                        jcomboGiaiDauActionPerformed(evt);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "The user is already existed");
-                    }
-                    break;
-                }
-            }    
-            
+            result = tour.isExistUser(userName);
+            if (!result) {
+                User user = Server.getUser(userName);
+                tour.users.add(user);
+                JOptionPane.showMessageDialog(null, "Insert Successfully");
+            } else {
+                JOptionPane.showMessageDialog(null, "The user is already existed");
+            }
         }
-    }//GEN-LAST:event_btnAddActionPerformed
+    }//GEN-LAST:event_btnAddUserUserActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        isRun = false;
         this.dispose();
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnAddTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddTourActionPerformed
+        // TODO add your handling code here:
+        new CreateTourForm().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btnAddTourActionPerformed
 
     /**
      * @param args the command line arguments
@@ -223,7 +241,8 @@ public class ManageTourForm extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnAddTour;
+    private javax.swing.JButton btnAddUser;
     private javax.swing.JButton btnExit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

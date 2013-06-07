@@ -21,6 +21,13 @@ public class Tournament {
 
     public Tournament() {
         users = new ArrayList<>();
-    }   
+    }
     
+    public boolean isExistUser(String name){
+        for(int i = 0; i < users.size(); i++){
+            if(users.get(i).UserName.equals(name))
+                return true;
+        }
+        return false;
+    }
 }

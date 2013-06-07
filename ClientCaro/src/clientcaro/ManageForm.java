@@ -37,6 +37,7 @@ public class ManageForm extends javax.swing.JFrame {
         ShowAvatar();
         this.setTitle(Client.cUser.UserName);
         listUsers = new Vector<>();
+        listTours = new Vector<>();
         Thread listener = new Thread(listen);
         listener.start();
 
@@ -65,7 +66,8 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //nhận danh sách các giải đấu
                         case '2':
-
+                            listTours.add(Client.GetMsg());
+                            lTournament.setListData(listTours);
                             break;
                         //nhận được lời mời
                         case '3':
@@ -78,7 +80,7 @@ public class ManageForm extends javax.swing.JFrame {
                             //trả lời yes thì hiện form chơi game
                             if (result == JOptionPane.YES_OPTION) {
                                 new PlayGameForm().setVisible(true);
-                                ManageForm.this.setVisible(false);
+                                ManageForm.this.dispose();
                             }
                             break;
                         //nhận kết quả lời mời
@@ -86,7 +88,7 @@ public class ManageForm extends javax.swing.JFrame {
                             answer = (Answer) Client.GetObj();
                             if (answer.Answer == JOptionPane.YES_OPTION) {
                                 new PlayGameForm().setVisible(true);
-                                ManageForm.this.setVisible(false);
+                                ManageForm.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
                                         "Rejected", JOptionPane.WARNING_MESSAGE);
@@ -96,10 +98,22 @@ public class ManageForm extends javax.swing.JFrame {
                         case '5':
                             taChatRoom.append(Client.GetMsg() + "\n");
                             break;
+                        //nhận kết quả tham gia giải đấu
+                        case '6':
+                            String msg = Client.GetMsg();
+                            if(msg.equals("score"))
+                                JOptionPane.showMessageDialog(ManageForm.this," your score's too low",
+                                        "Rejected", JOptionPane.WARNING_MESSAGE);
+                            else if(msg.equals("success")){
+                                new WaitingForm().setVisible(true);
+                                ManageForm.this.dispose();
+                            }
+                            break;
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(ManageForm.this, "Can't connect to server",
-                            "Can't connect", JOptionPane.WARNING_MESSAGE);;
+                            "Can't connect", JOptionPane.WARNING_MESSAGE);
+                    System.exit(0);
                 }
             }
         }
@@ -115,7 +129,7 @@ public class ManageForm extends javax.swing.JFrame {
     private void initComponents() {
 
         btnInvite = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnJoinTour = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lUserOnline = new javax.swing.JList();
@@ -145,7 +159,12 @@ public class ManageForm extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Join tournament");
+        btnJoinTour.setText("<html>Join <br>Tournament<html>");
+        btnJoinTour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnJoinTourActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Users Online"));
 
@@ -247,7 +266,7 @@ public class ManageForm extends javax.swing.JFrame {
                         .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnInvite)
-                            .addComponent(jButton2))
+                            .addComponent(btnJoinTour, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -267,7 +286,7 @@ public class ManageForm extends javax.swing.JFrame {
                                 .addGap(17, 17, 17)
                                 .addComponent(btnInvite)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton2))
+                                .addComponent(btnJoinTour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(36, 36, 36)
@@ -333,6 +352,17 @@ public class ManageForm extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnBrowseImageActionPerformed
 
+    private void btnJoinTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinTourActionPerformed
+        try {
+            // TODO add your handling code here:
+            String tourName = (String)lTournament.getSelectedValue();
+            Client.SendObj('4');
+            Client.SendMsg(tourName);
+        } catch (IOException ex) {
+            Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnJoinTourActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -370,8 +400,8 @@ public class ManageForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBrowseImage;
     private javax.swing.JButton btnInvite;
+    private javax.swing.JButton btnJoinTour;
     private javax.swing.JButton btnSend;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabelImage;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
