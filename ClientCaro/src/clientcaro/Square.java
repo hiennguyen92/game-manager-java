@@ -16,7 +16,7 @@ public class Square extends JButton{
     private boolean O;
     private int row,col;
     
-    private int value;  //nguoi thang
+    private char value;  //nguoi thang
 
     
     
@@ -56,14 +56,14 @@ public class Square extends JButton{
     /**
      * @return the value
      */
-    public int getValue() {
+    public char getValue() {
         return value;
     }
 
     /**
      * @param value the value to set
      */
-    public void setValue(int value) {
+    public void setValue(char value) {
         this.value = value;
     }
 

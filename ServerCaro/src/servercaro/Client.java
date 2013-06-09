@@ -125,6 +125,33 @@ public class Client extends Thread {
                             SendMsg("success");
                         }
                         break;
+                    case 'X':
+                        Caro caro = (Caro)GetObj();
+                        user = Server.getClient(caro.NameEnemy);
+                        String temp = caro.UserName;
+                        caro.UserName = caro.NameEnemy;
+                        caro.NameEnemy = temp;
+                        user.SendObj('X');
+                        user.SendObj(caro);
+                        System.out.print(caro.UserName+"/"+caro.NameEnemy+"/"+caro.i+"/"+caro.j);
+                        break;
+                    case 'K':
+                        String[] sss = GetMsg().split(":");
+                        user = Server.getClient(sss[1]);
+                        
+                        user.SendObj('K');
+                        user.SendMsg(sss[0]);
+                        break;
+//                    case 'O':
+//                        caro = (Caro)GetObj();
+//                        user = Server.getClient(caro.NameEnemy);
+//                        temp = caro.UserName;
+//                        caro.UserName = caro.NameEnemy;
+//                        caro.NameEnemy = temp;
+//                        user.SendObj('O');
+//                        user.SendObj(caro);
+//                        System.out.print(caro.UserName+"/"+caro.NameEnemy+"/"+caro.i+"/"+caro.j);
+//                        break;
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +31,16 @@ public class ManageForm extends javax.swing.JFrame {
     Vector<String> listUsers; //danh sách hiển thị người đang onl
     Vector<String> listTours; //danh sách hiển thị danh sách các giải đấu
     boolean isRun = true; //xác định thread chạy hay ngưng
+    static Map<String, Object> listClientCaro; //thông tin caro nhận đc
+    static Map<String,Object> listClientStatus; //trạng thái sẵn sàng chơi game
+    
+    
+ 
 
+    
+    
+    
+    
     /**
      * Creates new form ManageForm
      */
@@ -38,6 +50,8 @@ public class ManageForm extends javax.swing.JFrame {
         this.setTitle(Client.cUser.UserName);
         listUsers = new Vector<>();
         listTours = new Vector<>();
+        listClientCaro = new HashMap<>();
+        listClientStatus = new HashMap<>();
         Thread listener = new Thread(listen);
         listener.start();
 
@@ -53,6 +67,7 @@ public class ManageForm extends javax.swing.JFrame {
             while (isRun) {
                 try {
                     char offset = (char) Client.GetObj();
+                    System.out.print(offset);
                     switch (offset) {
                         //có 1 người chơi thoát
                         case '0':
@@ -79,7 +94,9 @@ public class ManageForm extends javax.swing.JFrame {
                             Client.SendObj(answer);
                             //trả lời yes thì hiện form chơi game
                             if (result == JOptionPane.YES_OPTION) {
-                                new PlayGameForm().setVisible(true);
+                                listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
+                                listClientStatus.put(userName, "NULL");
+                                new PlayGameForm(userName,false).setVisible(true);
                                 ManageForm.this.dispose();
                             }
                             break;
@@ -87,7 +104,9 @@ public class ManageForm extends javax.swing.JFrame {
                         case '4':
                             answer = (Answer) Client.GetObj();
                             if (answer.Answer == JOptionPane.YES_OPTION) {
-                                new PlayGameForm().setVisible(true);
+                                listClientCaro.put(answer.UserName,new Caro(null, null, 'E', 0, 0));
+                                listClientStatus.put(answer.UserName, "NULL");
+                                new PlayGameForm(answer.UserName,true).setVisible(true);
                                 ManageForm.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
@@ -109,6 +128,16 @@ public class ManageForm extends javax.swing.JFrame {
                                 ManageForm.this.dispose();
                             }
                             break;
+                            //thông tin caro
+                        case 'X':
+                            Caro caro = (Caro)Client.GetObj();
+                            listClientCaro.put(caro.NameEnemy, caro);
+                            System.out.print(caro.UserName+","+caro.NameEnemy+","+caro.i+caro.j);
+                            break;
+                            //Sẵn Sàng Đánh Caro
+                        case 'K':
+                            msg = Client.GetMsg();
+                            listClientStatus.put(msg, "OK");
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(ManageForm.this, "Can't connect to server",

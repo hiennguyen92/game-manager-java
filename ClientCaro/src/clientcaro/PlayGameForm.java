@@ -1,6 +1,8 @@
 
 package clientcaro;
 
+import Data.DataType;
+import Data.DataType.Caro;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +12,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -23,38 +28,35 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     /**
      * Creates new form CaroGUI
      */
-    private Socket chatDirectSocket = null;
-    private PrintWriter out = null;
-    private BufferedReader in = null;
-    private String User;
-    private String Type;
+   // private Socket chatDirectSocket = null;
+    //private PrintWriter out = null;
+    //private BufferedReader in = null;
+    //private String User;
+    //private String Type;
+    private char PlayerType;
+    private String nameDoiThu; 
+    boolean isRun = true;
     private Square[][] arrSquare;
     private final int Rows = 20, Cols = 20;
     private  boolean Winner=false,EnemyWinner=false;
     private int time = 60;
-    private Timer timer = new Timer(1000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            lblTime.setText(time + "");
-            --time;
-
-
-            if (EnemyWinner == true) {
-                JOptionPane.showMessageDialog(null, "Đối Thủ Thắng", "Ket Qua", JOptionPane.PLAIN_MESSAGE);
-                setEnableButton(false);
-                timer.stop();
-            }
-
-            
-            
-            if (time == 0) {
-                time = 60;
-            }
-        }
-    });
+//    private Timer timer = new Timer(1000, new ActionListener() {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            lblTime.setText(time + "");
+//            --time;
+//            if (EnemyWinner == true) {
+//                JOptionPane.showMessageDialog(null, "Ban Da Thu", "Ket Qua", JOptionPane.PLAIN_MESSAGE);
+//                timer.stop();
+//            }
+//            if (time == 0) {
+//                time = 60;
+//            }
+//        }
+//    });
     
 
-    public PlayGameForm() {
+    public PlayGameForm(String UserDoiThu,boolean isInviter) {
 
         initComponents();
         
@@ -62,167 +64,143 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         arrSquare = new Square[Rows][Cols];
         btnSend.addActionListener(this);
         chatField.addActionListener(this);
-        
+        nameDoiThu = UserDoiThu;
+        setTitle(Client.cUser.UserName+"==>>"+UserDoiThu);
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 final int a = i, b = j;
                 arrSquare[a][b] = new Square(false);//o ban co
                 arrSquare[a][b].setBackground(Color.ORANGE);
-                arrSquare[a][b].addActionListener(this);
-                arrSquare[a][b].setValue(-1);
+                arrSquare[a][b].setValue('-');
                 arrSquare[a][b].setRow(i);
                 arrSquare[a][b].setCol(j);
                 jPGame.add(arrSquare[a][b]);
             }
-        }  
-    }
-    
-
-    
-    
-    public void setType(String type){
-        this.Type = type;
+        } 
+        jBtnStart.setVisible(isInviter);
+        jBtnStart.setEnabled(false);
+        jBtnOK.setVisible(!isInviter);
+        Thread listener = new Thread(listen);
+        listener.start();
     }
 
-    public void setID(String user) {
-        this.User = user;
-    }
-
-    public void setSocket(Socket s) {
-        this.chatDirectSocket = s;
-    }
-
-    public void setDetailConnection(String addr, int port) {
-        try {
-            chatDirectSocket = new Socket(addr, port);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    public void run() {
-        try {
-            out = new PrintWriter(chatDirectSocket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(chatDirectSocket.getInputStream()));
-            this.sendMessage(User);
-            setTitle(in.readLine() + " - " + "Caro");
-            Thread read = new Thread(new RemoteReader());
-            read.start();
-            setVisible(true);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    private class RemoteReader implements Runnable {
-
+    Runnable listen = new Runnable(){
         @Override
         public void run() {
-            String receive;
-            try {
-                while ((receive = in.readLine()) != null) {
-                    if (receive.startsWith("Disconnect")) {
-                        //disconnect
+            while (isRun) {
+                try {
+                    if(ManageForm.listClientStatus.size()>0){
+                        String status = (String)ManageForm.listClientStatus.get(nameDoiThu);
+                        if(status.equals("OK")){
+                            jBtnStart.setEnabled(true);
+                        }
                     }
-                    if(receive.startsWith("Caro:")){
-                        String[] str = receive.substring(5).split(":");
-                        //String type = str[0];
-                        int i = Integer.parseInt(str[0]);
-                        int j = Integer.parseInt(str[1]);
-                        String type = str[2];
-                        timer.start();
-                        if(type.equals("x")){
-                            arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
-                            arrSquare[i][j].setValue(1);
-                            EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 1, i, j);
-                            
-                        }
-                        else{
-                            arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
-                            arrSquare[i][j].setValue(0);
-                            EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 0, i, j);
-                        }
+                    if(ManageForm.listClientCaro.size()>0)
+                    {
+                        Caro caro = (Caro)ManageForm.listClientCaro.get(nameDoiThu);
                         
-                        for (int l = 0; l < Rows; l++) {
-                            for (int k = 0; k < Cols; k++) {
-                                arrSquare[l][k].setEnabled(true);
+                        if(caro.NameEnemy != null){
+                            setButtonListener(true);
+                            if(caro.Type == 'X'){
+                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
+                                arrSquare[caro.i][caro.j].setValue('x');
+                                ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
+                                EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'x', caro.i, caro.j);
+                            }
+                            else{
+                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
+                                arrSquare[caro.i][caro.j].setValue('o');
+                                ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
+                                EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'o', caro.i, caro.j);
                             }
                         }
-                    }else {
-                        setVisible(true);
-                        messageArea.append(receive + "\n");
-                    }
+                    }     
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(PlayGameForm.this, ex.getMessage(),
+                            "Nhan dc roi", JOptionPane.WARNING_MESSAGE);
+                    System.exit(0);
                 }
- 
-            } catch (IOException e) {
-                System.out.println(e);
             }
         }
-    }
+        
+    };
 
-    private void exit() {
-        try {
-            chatDirectSocket.close();
-        } catch (Exception e) {
-            System.err.println("Lỗi ở exit GUI Private");
-        }
-        System.exit(0);
-    }
 
-    public void sendMessage(String s) {
-        out.println(s);
-        out.flush();
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        
         if (e.getSource() == chatField) {
             String chat = chatField.getText();
-            messageArea.append(User + "::" + chat + "\n");
-            chatField.setText("");
-            out.println(User + "::" + chat);
-            out.flush();
         }
+        
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 if(e.getSource() == arrSquare[i][j]){
-                    
-                    if(this.Type.equals("x")){
+                    if(PlayerType == 'x'){
                         arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
-                        arrSquare[i][j].setValue(1);
-                        Winner = StaticCheckWinner.CheckWin(arrSquare, 1, i, j);
-                        setEnableButton(false);
+                        arrSquare[i][j].setValue('x');
+                        Winner = StaticCheckWinner.CheckWin(arrSquare, 'x', i, j);
+                        try {
+                            Client.SendObj('X');
+                            DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu,'X', i, j);
+                            Client.SendObj(caro);
+                            messageArea.append(Client.cUser.UserName+":"+nameDoiThu+":"+i+","+j);
+                        } catch (IOException ex) {
+                            Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                     else{
                         arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
-                        arrSquare[i][j].setValue(0);
-                        Winner = StaticCheckWinner.CheckWin(arrSquare, 0, i, j);
-                        setEnableButton(false);
+                        arrSquare[i][j].setValue('o');
+                        Winner = StaticCheckWinner.CheckWin(arrSquare, 'o', i, j);
+                        try {
+                            Client.SendObj('X');
+                            DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu, 'O', i, j);
+                            Client.SendObj(caro);
+                            messageArea.append(Client.cUser.UserName + ":" + nameDoiThu + ":" + i + "," + j);
+                        } catch (IOException ex) {
+                            Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
+                        }             
                     }
-                    out.println("Caro:" + i + ":" + j +":"+this.Type);
-                    out.flush();
                     
                     if (Winner == true) {
                         JOptionPane.showMessageDialog(null, "Bạn Đã Chiến Thắng", "Ket Qua", JOptionPane.PLAIN_MESSAGE);
                     }
-                    timer.stop();
-                    time = 60;
+                    setButtonListener(false);
                 }
                 
             } 
+        }  
+    }
+    
+    public char Type(){
+        for (int i = 0; i < Rows; i++) {
+            for (int j = 0; j < Cols; j++)
+                if(arrSquare[i][j].getValue() == 'x')
+                    return 'o';
         }
-        
-
-        
+        return 'x';
     }
     
     
-    public void setEnableButton(boolean b) {
-        for (int i = 0; i < Rows; i++) {
-            for (int j = 0; j < Cols; j++) {
-                arrSquare[i][j].setEnabled(b);
+    public void setButtonListener(boolean isListener) {
+        if (isListener) {
+            for (int i = 0; i < Rows; i++) {
+                for (int j = 0; j < Cols; j++) {
+                    arrSquare[i][j].addActionListener(this);
+                }
             }
         }
+        else{
+            for (int i = 0; i < Rows; i++) {
+                for (int j = 0; j < Cols; j++) {
+                    arrSquare[i][j].removeActionListener(this);
+                }
+            }
+        }
+            
     }
 
     /**
@@ -244,6 +222,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         chatField = new javax.swing.JTextField();
         btnSend = new javax.swing.JButton();
         lblTime = new javax.swing.JLabel();
+        jBtnStart = new javax.swing.JButton();
+        jBtnOK = new javax.swing.JButton();
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -284,6 +264,20 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
         lblTime.setText("- -");
 
+        jBtnStart.setText("Start");
+        jBtnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnStartActionPerformed(evt);
+            }
+        });
+
+        jBtnOK.setText("OK!!!");
+        jBtnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnOKActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -298,13 +292,20 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(chatField, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1))
-                        .addContainerGap())
+                                .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(46, 46, 46)
-                        .addComponent(lblTime)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(46, 46, 46)
+                                .addComponent(lblTime))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jBtnStart)
+                                .addGap(18, 18, 18)
+                                .addComponent(jBtnOK)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -313,7 +314,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblTime)
-                        .addGap(249, 249, 249)
+                        .addGap(87, 87, 87)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jBtnStart)
+                            .addComponent(jBtnOK))
+                        .addGap(139, 139, 139)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(13, 13, 13)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -326,38 +331,58 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jBtnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnStartActionPerformed
+        // TODO add your handling code here:
+       PlayerType = 'x';
+       jBtnStart.setEnabled(false);
+       setButtonListener(true);
+    }//GEN-LAST:event_jBtnStartActionPerformed
+
+    private void jBtnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnOKActionPerformed
+        // TODO add your handling code here:
+        try {
+            Client.SendObj('K');
+            Client.SendMsg(Client.cUser.UserName+":"+nameDoiThu);
+        } catch (IOException ex) {
+            Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        jBtnOK.setEnabled(false);
+    }//GEN-LAST:event_jBtnOKActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PlayGameForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new PlayGameForm().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(PlayGameForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//               // new PlayGameForm().setVisible(true);
+//            }
+//        });
+//    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;
     private javax.swing.JTextField chatField;
+    private javax.swing.JButton jBtnOK;
+    private javax.swing.JButton jBtnStart;
     private javax.swing.JPanel jPGame;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

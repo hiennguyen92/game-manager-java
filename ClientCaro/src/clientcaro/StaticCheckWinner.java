@@ -9,7 +9,7 @@ package clientcaro;
  * @author Nguyen Hien
  */
 public class StaticCheckWinner {
-   static boolean CheckWin(Square[][] matrix,int value,int curRow,int curCol){
+   static boolean CheckWin(Square[][] matrix,char value,int curRow,int curCol){
        //check ngang
        int count_Ngang = 0;
        for (int j = 0; j < matrix[0].length; ++j) {
@@ -79,7 +79,6 @@ public class StaticCheckWinner {
                return true;
            }
        }
-
        return false;
    }
 }
