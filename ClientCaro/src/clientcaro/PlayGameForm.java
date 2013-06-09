@@ -114,7 +114,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                                 EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'o', caro.i, caro.j);
                             }
                         }
-                    }     
+                    }
+                    Thread.sleep(500);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(PlayGameForm.this, ex.getMessage(),
