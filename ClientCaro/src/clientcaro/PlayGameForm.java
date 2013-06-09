@@ -89,6 +89,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         public void run() {
             while (isRun) {
                 try {
+                    Thread.sleep(100);
                     if(ManageForm.listClientStatus.size()>0){
                         String status = (String)ManageForm.listClientStatus.get(nameDoiThu);
                         if(status.equals("OK")){
