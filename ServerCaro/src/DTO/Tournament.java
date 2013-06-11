@@ -23,6 +23,13 @@ public class Tournament {
         users = new ArrayList<>();
     }
     
+    public List<String> getNames(){
+        List<String> names = new ArrayList<>();
+        for(int i = 0; i < users.size(); i++)
+            names.add(users.get(i).UserName);
+        return names;
+    }
+    
     public boolean isExistUser(String name){
         for(int i = 0; i < users.size(); i++){
             if(users.get(i).UserName.equals(name))

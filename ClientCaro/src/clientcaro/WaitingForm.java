@@ -4,17 +4,74 @@
  */
 package clientcaro;
 
+import Data.DataType;
+import Data.DataType.Caro;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author ADMIN
  */
 public class WaitingForm extends javax.swing.JFrame {
 
+    public static Object mPauseLock = new Object();
+
     /**
      * Creates new form WaitingForm
      */
     public WaitingForm() {
         initComponents();
+        Thread listener = new Thread(listen);
+        listener.start();
+    }
+    Runnable listen = new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    char offset = ManageForm.offset;
+                    switch (offset) {
+                        case '7':
+                            List<String> userNames = (List<String>) Client.GetObj();
+                            int nRow = 0;
+                            for (int i = 0; i < userNames.size(); i += 2) {
+                                tbUsers.setValueAt(nRow + 1, nRow, 0);
+                                tbUsers.setValueAt(userNames.get(i), nRow, 1);
+                                if (i + 1 < userNames.size()) {
+                                    tbUsers.setValueAt(userNames.get(i + 1), nRow, 2);
+                                }
+                                nRow++;
+                            }
+
+                            break;
+                        case '8':
+                            String userName = Client.GetMsg();
+                            ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
+                            ManageForm.listClientStatus.put(userName, "NULL");
+                            new PlayGameForm(userName, false).setVisible(true);
+                            //ManageForm.this.dispose();
+                            break;
+
+                    }
+                    ManageForm.resume();
+                    synchronized (mPauseLock) {
+                        mPauseLock.wait();
+                    }
+                } catch (Exception ex) {
+//                    Logger.getLogger(WaitingForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    };
+
+    public static void resume() {
+        synchronized (mPauseLock) {
+            mPauseLock.notifyAll();
+        }
     }
 
     /**
@@ -29,7 +86,7 @@ public class WaitingForm extends javax.swing.JFrame {
         lbTitle = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbUsers = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -38,20 +95,21 @@ public class WaitingForm extends javax.swing.JFrame {
 
         jLabel1.setText("User participated:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Name", "Score"
+                "Cặp đấu", "Player 1", "Player 2"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getColumn(0).setResizable(false);
-        jTable1.getColumnModel().getColumn(1).setResizable(false);
+        jScrollPane1.setViewportView(tbUsers);
+        tbUsers.getColumnModel().getColumn(0).setResizable(false);
+        tbUsers.getColumnModel().getColumn(1).setResizable(false);
+        tbUsers.getColumnModel().getColumn(2).setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -123,7 +181,7 @@ public class WaitingForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lbTitle;
+    private javax.swing.JTable tbUsers;
     // End of variables declaration//GEN-END:variables
 }

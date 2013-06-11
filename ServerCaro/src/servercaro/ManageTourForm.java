@@ -6,9 +6,13 @@ package servercaro;
 
 import DTO.Tournament;
 import DTO.User;
+import Data.DataType;
+import Data.DataType.Answer;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -17,6 +21,7 @@ import javax.swing.JOptionPane;
 public class ManageTourForm extends javax.swing.JFrame {
     
     boolean isRun = true;
+    Tournament Tour = null;
     /**
      * Creates new form ManageTourForm
      */
@@ -34,7 +39,7 @@ public class ManageTourForm extends javax.swing.JFrame {
                 if(jcomboGiaiDau.getSelectedIndex() != -1)
                     ShowTourInfo();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -67,6 +72,7 @@ public class ManageTourForm extends javax.swing.JFrame {
         btnAddUser = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
         btnAddTour = new javax.swing.JButton();
+        btnStart = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -100,6 +106,13 @@ public class ManageTourForm extends javax.swing.JFrame {
             }
         });
 
+        btnStart.setText("Start");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -117,7 +130,9 @@ public class ManageTourForm extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(138, 138, 138))
+                .addGap(18, 18, 18)
+                .addComponent(btnStart)
+                .addGap(47, 47, 47))
             .addGroup(layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(jLabel1)
@@ -135,9 +150,15 @@ public class ManageTourForm extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jcomboGiaiDau, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAddTour, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(86, 86, 86)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jcomboAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -157,15 +178,13 @@ public class ManageTourForm extends javax.swing.JFrame {
     }
 
     private void ShowTourInfo() {
-        Tournament tour;
-
         String tengiaidau = jcomboGiaiDau.getSelectedItem().toString();
         String setUser = "List of users in tournament '" + tengiaidau + "' : " + "\n";
 
-        tour = Server.getTour(tengiaidau);
+        Tour = Server.getTour(tengiaidau);
 
-        for (int i = 0; i < tour.users.size(); i++) {
-            String username = tour.users.get(i).UserName;
+        for (int i = 0; i < Tour.users.size(); i++) {
+            String username = Tour.users.get(i).UserName;
             setUser += (i + 1) + "\t";
             setUser += username;
             setUser += "\n";
@@ -206,6 +225,29 @@ public class ManageTourForm extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_btnAddTourActionPerformed
 
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        // TODO add your handling code here:
+        if(Tour.users.size() < Tour.nPlayer){
+            JOptionPane.showMessageDialog(this,"not enough people",
+                                        "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        else{
+            for(int i = 0; i < Tour.users.size(); i+=2){
+                try {
+                    Client client = Server.getClient(Tour.users.get(i+1).UserName);
+                    client.SendObj('8');
+                    client.SendMsg(Tour.users.get(i).UserName);
+                    client = Server.getClient(Tour.users.get(i).UserName);
+                    client.SendObj('4');
+                    Answer answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION);
+                    client.SendObj(answer);
+                } catch (IOException ex) {
+                    Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_btnStartActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -244,6 +286,7 @@ public class ManageTourForm extends javax.swing.JFrame {
     private javax.swing.JButton btnAddTour;
     private javax.swing.JButton btnAddUser;
     private javax.swing.JButton btnExit;
+    private javax.swing.JButton btnStart;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

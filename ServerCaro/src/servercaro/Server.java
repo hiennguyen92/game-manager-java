@@ -16,9 +16,13 @@ import java.util.List;
  */
 public class Server {
 
+    //tất cả người dùng trong database
     public static List<User> allUsers = new ArrayList<>();
+    //tất cả Client đã đăng nhập
     public static List<Client> cSockets = new ArrayList<>();
+    //tất cả Tour đã tổ chức
     public static List<Tournament> tournaments = new ArrayList<>();
+    //socket đại diện server
     public static ServerSocket sSocket;
 
     //lấy index của 1 người trong database

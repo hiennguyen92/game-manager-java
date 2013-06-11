@@ -123,6 +123,11 @@ public class Client extends Thread {
                         else{
                             tour.users.add(cUser);
                             SendMsg("success");
+                            for(int i = 0; i < tour.users.size(); i++){
+                                user = Server.getClient(tour.users.get(i).UserName);
+                                user.SendObj('7');
+                                user.SendObj(tour.getNames());
+                            }
                         }
                         break;
                     case 'X':

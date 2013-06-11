@@ -32,15 +32,10 @@ public class ManageForm extends javax.swing.JFrame {
     Vector<String> listTours; //danh sách hiển thị danh sách các giải đấu
     boolean isRun = true; //xác định thread chạy hay ngưng
     static Map<String, Object> listClientCaro; //thông tin caro nhận đc
-    static Map<String,Object> listClientStatus; //trạng thái sẵn sàng chơi game
-    
-    
- 
+    static Map<String, Object> listClientStatus; //trạng thái sẵn sàng chơi game
+    static char offset = ' ';
+    static Object mPauseLock = new Object();
 
-    
-    
-    
-    
     /**
      * Creates new form ManageForm
      */
@@ -66,7 +61,7 @@ public class ManageForm extends javax.swing.JFrame {
         public void run() {
             while (isRun) {
                 try {
-                    char offset = (char) Client.GetObj();
+                    offset = (char) Client.GetObj();
                     System.out.print(offset);
                     switch (offset) {
                         //có 1 người chơi thoát
@@ -96,7 +91,7 @@ public class ManageForm extends javax.swing.JFrame {
                             if (result == JOptionPane.YES_OPTION) {
                                 listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(userName, "NULL");
-                                new PlayGameForm(userName,false).setVisible(true);
+                                new PlayGameForm(userName, false).setVisible(true);
                                 ManageForm.this.dispose();
                             }
                             break;
@@ -104,10 +99,10 @@ public class ManageForm extends javax.swing.JFrame {
                         case '4':
                             answer = (Answer) Client.GetObj();
                             if (answer.Answer == JOptionPane.YES_OPTION) {
-                                listClientCaro.put(answer.UserName,new Caro(null, null, 'E', 0, 0));
+                                listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(answer.UserName, "NULL");
-                                new PlayGameForm(answer.UserName,true).setVisible(true);
-                                ManageForm.this.dispose();
+                                new PlayGameForm(answer.UserName, true).setVisible(true);
+                                //ManageForm.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
                                         "Rejected", JOptionPane.WARNING_MESSAGE);
@@ -120,24 +115,32 @@ public class ManageForm extends javax.swing.JFrame {
                         //nhận kết quả tham gia giải đấu
                         case '6':
                             String msg = Client.GetMsg();
-                            if(msg.equals("score"))
-                                JOptionPane.showMessageDialog(ManageForm.this," your score's too low",
+                            if (msg.equals("score")) {
+                                JOptionPane.showMessageDialog(ManageForm.this, " your score's too low",
                                         "Rejected", JOptionPane.WARNING_MESSAGE);
-                            else if(msg.equals("success")){
+                            } else if (msg.equals("success")) {
                                 new WaitingForm().setVisible(true);
-                                ManageForm.this.dispose();
+                                //isRun = false;
+                                //ManageForm.this.dispose();
                             }
                             break;
-                            //thông tin caro
+                        //thông tin caro
                         case 'X':
-                            Caro caro = (Caro)Client.GetObj();
+                            Caro caro = (Caro) Client.GetObj();
                             listClientCaro.put(caro.NameEnemy, caro);
-                            System.out.print(caro.UserName+","+caro.NameEnemy+","+caro.i+caro.j);
+                            System.out.print(caro.UserName + "," + caro.NameEnemy + "," + caro.i + caro.j);
                             break;
-                            //Sẵn Sàng Đánh Caro
+                        //Sẵn Sàng Đánh Caro
                         case 'K':
                             msg = Client.GetMsg();
                             listClientStatus.put(msg, "OK");
+                            break;
+                        default:
+                            WaitingForm.resume();
+                            synchronized (mPauseLock) {
+                                mPauseLock.wait();
+                            }
+                            break;
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(ManageForm.this, "Can't connect to server",
@@ -147,6 +150,12 @@ public class ManageForm extends javax.swing.JFrame {
             }
         }
     };
+
+    public static void resume() {
+        synchronized (mPauseLock) {
+            mPauseLock.notifyAll();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -384,7 +393,7 @@ public class ManageForm extends javax.swing.JFrame {
     private void btnJoinTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinTourActionPerformed
         try {
             // TODO add your handling code here:
-            String tourName = (String)lTournament.getSelectedValue();
+            String tourName = (String) lTournament.getSelectedValue();
             Client.SendObj('4');
             Client.SendMsg(tourName);
         } catch (IOException ex) {
