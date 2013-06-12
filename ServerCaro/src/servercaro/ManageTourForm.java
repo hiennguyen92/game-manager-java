@@ -19,9 +19,10 @@ import javax.swing.JPanel;
  * @author hieu
  */
 public class ManageTourForm extends javax.swing.JFrame {
-    
+
     boolean isRun = true;
     Tournament Tour = null;
+
     /**
      * Creates new form ManageTourForm
      */
@@ -36,8 +37,9 @@ public class ManageTourForm extends javax.swing.JFrame {
         @Override
         public void run() {
             while (isRun) {
-                if(jcomboGiaiDau.getSelectedIndex() != -1)
+                if (jcomboGiaiDau.getSelectedIndex() != -1) {
                     ShowTourInfo();
+                }
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
@@ -50,7 +52,9 @@ public class ManageTourForm extends javax.swing.JFrame {
     private void ListAllUser() {
         jcomboGiaiDau.removeAll();
         for (int i = 0; i < Server.tournaments.size(); i++) {
-            jcomboGiaiDau.addItem(Server.tournaments.get(i).name);
+            if (!Server.tournaments.get(i).isStart) {
+                jcomboGiaiDau.addItem(Server.tournaments.get(i).name);
+            }
         }
     }
 
@@ -227,19 +231,19 @@ public class ManageTourForm extends javax.swing.JFrame {
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         // TODO add your handling code here:
-        if(Tour.users.size() < Tour.nPlayer){
-            JOptionPane.showMessageDialog(this,"not enough people",
-                                        "Error", JOptionPane.WARNING_MESSAGE);
-        }
-        else{
-            for(int i = 0; i < Tour.users.size(); i+=2){
+        if (Tour.users.size() < Tour.nPlayer) {
+            JOptionPane.showMessageDialog(this, "not enough people",
+                    "Error", JOptionPane.WARNING_MESSAGE);
+        } else {
+            jcomboGiaiDau.removeItem(Tour.name);
+            for (int i = 0; i < Tour.users.size(); i += 2) {
                 try {
-                    Client client = Server.getClient(Tour.users.get(i+1).UserName);
+                    Client client = Server.getClient(Tour.users.get(i + 1).UserName);
                     client.SendObj('8');
                     client.SendMsg(Tour.users.get(i).UserName);
                     client = Server.getClient(Tour.users.get(i).UserName);
                     client.SendObj('4');
-                    Answer answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION);
+                    Answer answer = new Answer(Tour.users.get(i + 1).UserName, JOptionPane.YES_OPTION);
                     client.SendObj(answer);
                 } catch (IOException ex) {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);

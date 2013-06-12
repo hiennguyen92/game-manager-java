@@ -11,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,15 +66,10 @@ public class ServerForm extends javax.swing.JFrame {
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendObj('1');
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(Server.cSockets.get(i).getUserName());
                             }
-                            for (int i = 0; i < Server.tournaments.size(); i++) {
-                                Tournament tour = Server.tournaments.get(i);
-                                String msg = "";
-                                msg += tour.name + " (";
-                                msg += tour.users.size() + "\\";
-                                msg += tour.nPlayer + ")";                                
-                                Server.cSockets.get(Server.cSockets.size() - 1).SendObj('2');
-                                Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(msg);
-                            }
+                            List<String> msg = Server.getAllToursStatus();
+                            Server.cSockets.get(Server.cSockets.size() - 1).SendObj('2');
+                            Server.cSockets.get(Server.cSockets.size() - 1).SendObj(msg);
+
                         } else {
                             out.writeUTF("fail");
                         }

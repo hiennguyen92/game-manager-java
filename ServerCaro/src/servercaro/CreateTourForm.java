@@ -6,8 +6,11 @@ package servercaro;
 
 import DTO.Tournament;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -177,18 +180,25 @@ public class CreateTourForm extends javax.swing.JFrame {
         tour.prize = Integer.parseInt(jtxtGiaiThuong.getText());
         tour.mPoint = Integer.parseInt(jtxtPoint.getText());
 
-        Server.tournaments.add(tour);
-        for(int i = 0; i < Server.cSockets.size(); i++){
-            try {
-                Server.cSockets.get(i).SendObj('2');
-                Server.cSockets.get(i).SendMsg(tour.name + " (0\\" + tour.nPlayer + ")");
-            } catch (IOException ex) {
-                Logger.getLogger(CreateTourForm.class.getName()).log(Level.SEVERE, null, ex);
+        if(Server.getTour(tour.name) == null){
+            Server.tournaments.add(tour);
+            for(int i = 0; i < Server.cSockets.size(); i++){
+                try {
+                    List<String> msg = Server.getAllToursStatus();
+                    Server.cSockets.get(i).SendObj('2');
+                    Server.cSockets.get(i).SendObj(msg);
+                } catch (IOException ex) {
+                    Logger.getLogger(CreateTourForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }
                 
-        new ManageTourForm().setVisible(true);
-        this.dispose();
+            new ManageTourForm().setVisible(true);
+            this.dispose();
+        }
+        else{
+            JOptionPane.showMessageDialog(this,"the tour's name is already existed",
+                                        "Error", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_btnCreateActionPerformed
 
     /**

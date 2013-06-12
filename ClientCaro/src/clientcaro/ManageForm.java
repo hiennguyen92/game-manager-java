@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -76,7 +77,7 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //nhận danh sách các giải đấu
                         case '2':
-                            listTours.add(Client.GetMsg());
+                            listTours = new Vector<>((List<String>) Client.GetObj());
                             lTournament.setListData(listTours);
                             break;
                         //nhận được lời mời

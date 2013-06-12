@@ -37,8 +37,8 @@ public class Client extends Thread {
 
     //gửi thông tin kiểu string
     public void SendMsg(String msg) throws IOException {
-            DataOutputStream out = new DataOutputStream(cSocket.getOutputStream());
-            out.writeUTF(msg);        
+        DataOutputStream out = new DataOutputStream(cSocket.getOutputStream());
+        out.writeUTF(msg);
     }
 
     //nhận thông tin kiểu string
@@ -49,10 +49,10 @@ public class Client extends Thread {
 
     //gửi thông tin kiểu object (mọi kiểu)
     public void SendObj(Object obj) throws IOException {
-            ObjectOutputStream out = new ObjectOutputStream(cSocket.getOutputStream());
-            out.writeObject(obj);       
+        ObjectOutputStream out = new ObjectOutputStream(cSocket.getOutputStream());
+        out.writeObject(obj);
     }
-    
+
     //nhận thông tin kiểu object
     public Object GetObj() throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream(cSocket.getInputStream());
@@ -86,7 +86,7 @@ public class Client extends Thread {
                         break;
                     //nhận trả lời lời mời
                     case '2':
-                        Answer answer = (Answer)GetObj();
+                        Answer answer = (Answer) GetObj();
                         user = Server.getClient(answer.UserName);
                         //gửi trả lời tới người đó
                         user.SendObj('4');
@@ -96,7 +96,7 @@ public class Client extends Thread {
                     //nhận cập nhật khung chat
                     case '3':
                         String msg = GetMsg();
-                        for(int i = 0; i < Server.cSockets.size(); i++){
+                        for (int i = 0; i < Server.cSockets.size(); i++) {
                             user = Server.cSockets.get(i);
                             user.SendObj('5');
                             user.SendMsg(cUser.UserName + ": " + msg);
@@ -106,44 +106,55 @@ public class Client extends Thread {
                     case '4':
                         msg = GetMsg();
                         String tourName = "";
-                        for(int i = msg.length()-1; i >= 0; i--){
-                            if(msg.charAt(i) == '('){
-                                tourName = msg.substring(0, i-1);
+                        for (int i = msg.length() - 1; i >= 0; i--) {
+                            if (msg.charAt(i) == '(') {
+                                tourName = msg.substring(0, i - 1);
                                 break;
                             }
                         }
                         Tournament tour = Server.getTour(tourName);
                         SendObj('6');
-                        if(tour.users.size() == tour.nPlayer){
+                        if (tour.users.size() == tour.nPlayer) {
                             SendMsg("full");
-                        }
-                        else if(tour.mPoint > cUser.Score){
+                        } else if (tour.mPoint > cUser.Score) {
                             SendMsg("score");
-                        }
-                        else{
+                        } else {
                             tour.users.add(cUser);
                             SendMsg("success");
-                            for(int i = 0; i < tour.users.size(); i++){
+                            for (int i = 0; i < tour.users.size(); i++) {
                                 user = Server.getClient(tour.users.get(i).UserName);
                                 user.SendObj('7');
                                 user.SendObj(tour.getNames());
                             }
+                            for (int i = 0; i < Server.cSockets.size(); i++) {
+                                Server.cSockets.get(i).SendObj('2');
+                                Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
+                            }
+                        }
+                        break;
+                    //nhận yêu cầu thoát tour
+                    case '5':
+                        tour = Server.getTourHasUser(cUser);
+                        tour.users.remove(cUser);
+                        for (int i = 0; i < Server.cSockets.size(); i++) {
+                            Server.cSockets.get(i).SendObj('2');
+                            Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
                         }
                         break;
                     case 'X':
-                        Caro caro = (Caro)GetObj();
+                        Caro caro = (Caro) GetObj();
                         user = Server.getClient(caro.NameEnemy);
                         String temp = caro.UserName;
                         caro.UserName = caro.NameEnemy;
                         caro.NameEnemy = temp;
                         user.SendObj('X');
                         user.SendObj(caro);
-                        System.out.print(caro.UserName+"/"+caro.NameEnemy+"/"+caro.i+"/"+caro.j);
+                        System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
                         break;
                     case 'K':
                         String[] sss = GetMsg().split(":");
                         user = Server.getClient(sss[1]);
-                        
+
                         user.SendObj('K');
                         user.SendMsg(sss[0]);
                         break;

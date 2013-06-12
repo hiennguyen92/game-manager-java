@@ -46,7 +46,10 @@ public class WaitingForm extends javax.swing.JFrame {
                                 }
                                 nRow++;
                             }
-
+                            ManageForm.resume();
+                            synchronized (mPauseLock) {
+                                mPauseLock.wait();
+                            }
                             break;
                         case '8':
                             String userName = Client.GetMsg();
@@ -54,13 +57,14 @@ public class WaitingForm extends javax.swing.JFrame {
                             ManageForm.listClientStatus.put(userName, "NULL");
                             new PlayGameForm(userName, false).setVisible(true);
                             //ManageForm.this.dispose();
+                            ManageForm.resume();
+                            synchronized (mPauseLock) {
+                                mPauseLock.wait();
+                            }
                             break;
 
                     }
-                    ManageForm.resume();
-                    synchronized (mPauseLock) {
-                        mPauseLock.wait();
-                    }
+
                 } catch (Exception ex) {
 //                    Logger.getLogger(WaitingForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -89,6 +93,11 @@ public class WaitingForm extends javax.swing.JFrame {
         tbUsers = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         lbTitle.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lbTitle.setText("Please wait until enough people");
@@ -143,6 +152,16 @@ public class WaitingForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            // TODO add your handling code here:
+            Client.SendObj('5');
+        } catch (IOException ex) {
+            Logger.getLogger(WaitingForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.setVisible(false);
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

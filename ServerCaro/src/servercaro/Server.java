@@ -35,29 +35,55 @@ public class Server {
         }
         return -1;
     }
-    
+
     //lấy thông tin client của 1 người đang tham gia chơi
-    public static Client getClient(String name){
-        for(int i = 0; i < cSockets.size(); i++){
-            if(cSockets.get(i).cUser.UserName.equals(name))
+    public static Client getClient(String name) {
+        for (int i = 0; i < cSockets.size(); i++) {
+            if (cSockets.get(i).cUser.UserName.equals(name)) {
                 return cSockets.get(i);
+            }
         }
         return null;
     }
-    
+
     //lấy thông tin user của 1 user trong database
-    public static User getUser(String name){
-        for(int i = 0; i < allUsers.size(); i++){
-            if(allUsers.get(i).UserName.equals(name))
+    public static User getUser(String name) {
+        for (int i = 0; i < allUsers.size(); i++) {
+            if (allUsers.get(i).UserName.equals(name)) {
                 return allUsers.get(i);
+            }
         }
         return null;
     }
-    
+
     //lấy thông tin 1 tour
-    public static Tournament getTour(String name){
+    public static Tournament getTour(String name) {
+        for (int i = 0; i < tournaments.size(); i++) {
+            if (tournaments.get(i).name.equals(name)) {
+                return tournaments.get(i);
+            }
+        }
+        return null;
+    }
+
+    //lấy tất cả tên tour
+    public static List<String> getAllToursStatus() {
+        List<String> statuses = new ArrayList<>();
+        for (int i = 0; i < tournaments.size(); i++) {
+            Tournament tour = tournaments.get(i);
+            String msg = "";
+            msg += tour.name + " (";
+            msg += tour.users.size() + "\\";
+            msg += tour.nPlayer + ")";
+            statuses.add(msg);
+        }
+        return statuses;
+    }
+    
+    //lấy 1 tour có user tên nào đó
+    public static Tournament getTourHasUser(User user){
         for(int i = 0; i < tournaments.size(); i++){
-            if(tournaments.get(i).name.equals(name))
+            if(tournaments.get(i).isExistUser(user.UserName))
                 return tournaments.get(i);
         }
         return null;
