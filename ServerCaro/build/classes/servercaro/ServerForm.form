@@ -85,6 +85,9 @@
     </Container>
     <Component class="javax.swing.JButton" name="btnStart">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="cc" red="0" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Start"/>
       </Properties>
       <Events>
@@ -93,6 +96,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnStop">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="cc" red="0" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Stop"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
@@ -102,6 +108,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnExit">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="0" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Exit"/>
       </Properties>
       <Events>
@@ -110,6 +119,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnTour">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="cc" red="0" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Tournament"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
@@ -119,6 +131,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnUserInfo">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="cc" red="0" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="User&apos;s Info"/>
       </Properties>
       <Events>

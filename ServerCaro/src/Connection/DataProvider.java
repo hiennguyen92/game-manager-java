@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,7 +56,7 @@ public class DataProvider {
                 String userName = resultSet.getString("UserName");
                 String password = resultSet.getString("Password");
                 int score = resultSet.getInt("Score");
-                Date lastVisit = resultSet.getDate("LastVisit");
+                Timestamp lastVisit = resultSet.getTimestamp("LastVisit");
 
                 User user = new User(userName, password, score, lastVisit);
 

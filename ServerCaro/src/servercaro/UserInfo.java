@@ -10,11 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import Connection.DataProvider;
 import DAO.UserDAO;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -32,9 +40,16 @@ public class UserInfo extends javax.swing.JFrame {
      * Creates new form UserInfo
      */
     public UserInfo() {
+        centreWindow(this);
         initComponents();
         ListAllUser();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+     public static void centreWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 3.4);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 3.3);
+        frame.setLocation(x, y);
     }
     public static List<User> allUsers = new ArrayList<>();
     public static List<Client> cSockets = new ArrayList<>();
@@ -51,7 +66,8 @@ public class UserInfo extends javax.swing.JFrame {
             String username = a.getUserName();
             String pass = a.getPassword();
             int Score = a.getScore();
-            String visit = a.getLastVisit();
+            Timestamp visit = a.getLastlogin();
+            String temp = visit.toString();
             int j=1;
             
             jUserTable.setValueAt(username, row, colum);
@@ -60,7 +76,7 @@ public class UserInfo extends javax.swing.JFrame {
             colum++;
             jUserTable.setValueAt(Score, row, colum);
             colum++;
-            jUserTable.setValueAt(visit, row, colum);
+            jUserTable.setValueAt(temp, row, colum);
             colum++;
             row++;
             colum=0;
@@ -90,6 +106,7 @@ public class UserInfo extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Arial", 2, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 255, 0));
         jLabel1.setText("User's Info");
 
         jUserTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -116,6 +133,7 @@ public class UserInfo extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jUserTable);
 
+        btnAddUser.setForeground(new java.awt.Color(0, 204, 255));
         btnAddUser.setText("Add New User");
         btnAddUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -123,6 +141,7 @@ public class UserInfo extends javax.swing.JFrame {
             }
         });
 
+        jbtnUpdate.setForeground(new java.awt.Color(0, 204, 255));
         jbtnUpdate.setText("Update");
         jbtnUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -130,6 +149,7 @@ public class UserInfo extends javax.swing.JFrame {
             }
         });
 
+        jbtnDelete.setForeground(new java.awt.Color(0, 204, 255));
         jbtnDelete.setText("Delete");
         jbtnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -137,6 +157,7 @@ public class UserInfo extends javax.swing.JFrame {
             }
         });
 
+        btnExit.setForeground(new java.awt.Color(255, 0, 51));
         btnExit.setText("Exit");
         btnExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -205,84 +226,62 @@ public class UserInfo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExitActionPerformed
    
     private void btnAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddUserActionPerformed
-        try {
+  
             String user = jtxtUser.getText();
             String pass = jtxtPass.getText();
             String score =  jtxtScore.getText();
             int score_ = Integer.parseInt(score);
-            String date = jtxtVisit.getText();
-            String query = "Insert into [USER] values('"+user+"','"+pass+"','"+score+"','"+date+"')";  
-            DataProvider a = new DataProvider();
-            Connection b = a.getConnection();
-            PreparedStatement pst = b.prepareStatement(query);
-            int numRowsChanged = pst.executeUpdate();
+           
+            java.util.Date date = new Date();
+            Object param = new java.sql.Timestamp(date.getTime());
+
             
-            if(numRowsChanged == 1){
+            User us = new User(user, pass, score_,(Timestamp) param);
+            
+            boolean result = UserDAO.Add(us);
+            
+            if(result == true){
                 JOptionPane.showMessageDialog(null , "Insert success"); 
                 ListAllUser();
             }
             else{
                 JOptionPane.showMessageDialog(null , "Insert failed");
             }
-            b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(UserInfo.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+          
+     
     }//GEN-LAST:event_btnAddUserActionPerformed
 
     private void jbtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnDeleteActionPerformed
-        try {
-            int rowChoose = jUserTable.getSelectedRow();
-            int ColumChoose = 0;
-            String username =  (String)jUserTable.getValueAt(rowChoose, ColumChoose);
-            DataProvider a = new DataProvider();
-            Connection b = a.getConnection();
-            String query = "Delete From [USER] Where UserName = '" +  username + "'";
-            Statement st;
-            st = b.createStatement();
-            PreparedStatement pst = b.prepareStatement(query);
-            int numRowsChanged = pst.executeUpdate(); 
-            if(numRowsChanged == 1){
-                JOptionPane.showMessageDialog(null, "Delete successfully");
-                //((DefaultTableModel)jUserTable.getModel()).setNumRows(0);
+            String user = jtxtUser.getText();
+            boolean result = UserDAO.Delete(user);
+            if(result){
+                JOptionPane.showMessageDialog(null, "Delete successfully");             
                 ListAllUser();      
             }
             else{
                 JOptionPane.showMessageDialog(null, "Wrong delete");
             }
-            b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(UserInfo.class.getName()).log(Level.SEVERE, null, ex);
-        }
+           
+       
     }//GEN-LAST:event_jbtnDeleteActionPerformed
 
     private void jbtnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnUpdateActionPerformed
-        try {         
+        
             String user = jtxtUser.getText();
             String pass = jtxtPass.getText();
             int score = Integer.parseInt(jtxtScore.getText());
             String date = jtxtVisit.getText();
-            DataProvider a = new DataProvider();
-            Connection b = a.getConnection();
-            String query = "Update [USER] Set UserName='"+user+"', Password='"+pass+"', score="+score+" Where UserName = '"+user+"'";
-            Statement st;
-            st = b.createStatement();
-            PreparedStatement pst = b.prepareStatement(query);
-            int numRowsChanged = pst.executeUpdate(); 
-            if(numRowsChanged == 1){
+            Timestamp ts = Timestamp.valueOf(date);
+            User us = new User(user, pass, score,ts);
+            boolean result = UserDAO.Update(us);
+            if(result){
                 JOptionPane.showMessageDialog(null, "Update successfully");
                 ListAllUser();      
             }
             else{
                 JOptionPane.showMessageDialog(null, "Wrong Update");
             }
-            b.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(UserInfo.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
-       
+      
     }//GEN-LAST:event_jbtnUpdateActionPerformed
 
     private void jUserTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jUserTableMouseClicked

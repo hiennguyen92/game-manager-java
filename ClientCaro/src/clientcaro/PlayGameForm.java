@@ -261,10 +261,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             .addGap(0, 496, Short.MAX_VALUE)
         );
 
-        btnSend.setText("Send");
+        btnSend.setText("[0,204,255]");
 
         lblTime.setText("- -");
 
+        jBtnStart.setForeground(new java.awt.Color(0, 204, 255));
         jBtnStart.setText("Start");
         jBtnStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -272,6 +273,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             }
         });
 
+        jBtnOK.setForeground(new java.awt.Color(0, 204, 255));
         jBtnOK.setText("OK!!!");
         jBtnOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

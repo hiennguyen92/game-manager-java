@@ -4,6 +4,7 @@
  */
 package DTO;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -14,14 +15,21 @@ public class User {
     public String UserName;
     public String Password;
     public int Score;
-    public String LastVisit;
+    public Timestamp LastVisit;
+
+    public Timestamp getLastlogin() {
+        return LastVisit;
+    }
+
+    public void setLastlogin(Timestamp lastlogin) {
+        this.LastVisit = lastlogin;
+    }
     
-    public User(String userName, String password, int score, Date lastVisit){
+    public User(String userName, String password, int score, Timestamp lastVisit){
         UserName = userName;
         Password = password;
         Score = score;
-        if(lastVisit != null)
-            LastVisit = lastVisit.toString();
+        LastVisit = lastVisit;
     }
 
     public String getUserName() {
@@ -48,12 +56,6 @@ public class User {
         this.Score = Score;
     }
 
-    public String getLastVisit() {
-        return LastVisit;
-    }
-
-    public void setLastVisit(String LastVisit) {
-        this.LastVisit = LastVisit;
-    }
+    
     
 }

@@ -35,7 +35,7 @@ public class UserDAO {
     }
     
    public static boolean Update(User user) {
-       sql = "update [USER] set LastVisit = N'"
+       sql = "update [USER] set LastVisit = '"
                 + user.LastVisit + "', Password = N'"
                 + user.Password + "', Score = "
                 + user.Score + " where UserName = '"

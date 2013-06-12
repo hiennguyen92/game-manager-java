@@ -191,6 +191,7 @@ public class ManageForm extends javax.swing.JFrame {
             }
         });
 
+        btnInvite.setForeground(new java.awt.Color(0, 204, 255));
         btnInvite.setText("Invite");
         btnInvite.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -198,6 +199,7 @@ public class ManageForm extends javax.swing.JFrame {
             }
         });
 
+        btnJoinTour.setForeground(new java.awt.Color(0, 204, 255));
         btnJoinTour.setText("<html>Join <br>Tournament<html>");
         btnJoinTour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -247,6 +249,7 @@ public class ManageForm extends javax.swing.JFrame {
         taChat.setRows(5);
         jScrollPane4.setViewportView(taChat);
 
+        btnSend.setForeground(new java.awt.Color(0, 204, 255));
         btnSend.setText("Send");
         btnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -276,6 +279,7 @@ public class ManageForm extends javax.swing.JFrame {
 
         jLabelImage.setText("jLabel1");
 
+        btnBrowseImage.setForeground(new java.awt.Color(0, 204, 255));
         btnBrowseImage.setText("Choose Avatar");
         btnBrowseImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -5,6 +5,9 @@
 package servercaro;
 
 import DTO.Tournament;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +27,15 @@ public class CreateTourForm extends javax.swing.JFrame {
      * Creates new form CreateTourForm
      */
     public CreateTourForm() {
+        centreWindow(this);
         initComponents();
     }
-
+     public static void centreWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 3.4);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 3.3);
+        frame.setLocation(x, y);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -67,6 +76,7 @@ public class CreateTourForm extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("At least point");
 
+        btnCreate.setForeground(new java.awt.Color(0, 204, 255));
         btnCreate.setText("Create");
         btnCreate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -80,6 +90,7 @@ public class CreateTourForm extends javax.swing.JFrame {
 
         jtxtPoint.setText("0");
 
+        btnExit.setForeground(new java.awt.Color(255, 51, 51));
         btnExit.setText("Exit");
         btnExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

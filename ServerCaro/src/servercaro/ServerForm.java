@@ -6,6 +6,9 @@ package servercaro;
 
 import DAO.UserDAO;
 import DTO.Tournament;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -29,6 +32,7 @@ public class ServerForm extends javax.swing.JFrame {
      * Creates new form ServerForm
      */
     public ServerForm() {
+        centreWindow(this);
         initComponents();
 
         try {
@@ -36,6 +40,12 @@ public class ServerForm extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(ServerForm.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+     public static void centreWindow(Window frame) {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 3.4);
+        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 3.3);
+        frame.setLocation(x, y);
     }
     Runnable getConnection = new Runnable() {
         @Override
@@ -109,6 +119,7 @@ public class ServerForm extends javax.swing.JFrame {
         taStatus.setRows(5);
         jScrollPane1.setViewportView(taStatus);
 
+        btnStart.setForeground(new java.awt.Color(0, 204, 255));
         btnStart.setText("Start");
         btnStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -116,6 +127,7 @@ public class ServerForm extends javax.swing.JFrame {
             }
         });
 
+        btnStop.setForeground(new java.awt.Color(0, 204, 255));
         btnStop.setText("Stop");
         btnStop.setEnabled(false);
         btnStop.addActionListener(new java.awt.event.ActionListener() {
@@ -124,6 +136,7 @@ public class ServerForm extends javax.swing.JFrame {
             }
         });
 
+        btnExit.setForeground(new java.awt.Color(255, 0, 51));
         btnExit.setText("Exit");
         btnExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -131,6 +144,7 @@ public class ServerForm extends javax.swing.JFrame {
             }
         });
 
+        btnTour.setForeground(new java.awt.Color(0, 204, 255));
         btnTour.setText("Tournament");
         btnTour.setEnabled(false);
         btnTour.addActionListener(new java.awt.event.ActionListener() {
@@ -139,6 +153,7 @@ public class ServerForm extends javax.swing.JFrame {
             }
         });
 
+        btnUserInfo.setForeground(new java.awt.Color(0, 204, 255));
         btnUserInfo.setText("User's Info");
         btnUserInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
