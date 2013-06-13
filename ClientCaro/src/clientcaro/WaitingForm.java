@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -26,7 +27,11 @@ public class WaitingForm extends javax.swing.JFrame {
      */
     public WaitingForm(String nameTour) {
         initComponents();
+<<<<<<< HEAD
         NameTour = nameTour;
+=======
+        this.setTitle(Client.cUser.UserName);
+>>>>>>> 686f4745fa49a397f57ae49f0b0658181a472d33
         Thread listener = new Thread(listen);
         listener.start();
     }
@@ -37,10 +42,14 @@ public class WaitingForm extends javax.swing.JFrame {
                 try {
                     char offset = ManageForm.offset;
                     switch (offset) {
+                        //nhận danh sách người chơi
                         case '7':
                             List<String> userNames = (List<String>) Client.GetObj();
                             int nRow = 0;
+                            DefaultTableModel model = (DefaultTableModel) tbUsers.getModel();
+                            model.setRowCount(0);
                             for (int i = 0; i < userNames.size(); i += 2) {
+                                model.addRow(new Object[]{null, null, null});
                                 tbUsers.setValueAt(nRow + 1, nRow, 0);
                                 tbUsers.setValueAt(userNames.get(i), nRow, 1);
                                 if (i + 1 < userNames.size()) {
@@ -53,6 +62,7 @@ public class WaitingForm extends javax.swing.JFrame {
                                 mPauseLock.wait();
                             }
                             break;
+                        //nhận báo hiệu bắt đầu giải đấu và đấu với 1 người chỉ định
                         case '8':
                             String userName = Client.GetMsg();
                             ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
@@ -106,14 +116,11 @@ public class WaitingForm extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel1.setText("User participated:");
+        jLabel1.setText("Users participated:");
 
         tbUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Cặp đấu", "Player 1", "Player 2"
@@ -162,6 +169,7 @@ public class WaitingForm extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
             // TODO add your handling code here:
+            //gửi báo hiệu thoát giải đấu
             Client.SendObj('5');
         } catch (IOException ex) {
             Logger.getLogger(WaitingForm.class.getName()).log(Level.SEVERE, null, ex);

@@ -5,8 +5,15 @@
 package clientcaro;
 
 import Data.DataType.*;
+<<<<<<< HEAD
 import Data.User;
+=======
+import java.io.File;
+>>>>>>> 686f4745fa49a397f57ae49f0b0658181a472d33
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.Socket;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -46,6 +54,7 @@ public class ManageForm extends javax.swing.JFrame {
         listClientStatus = new HashMap<>();
         Thread listener = new Thread(listen);
         listener.start();
+
     }
 
     private void ShowAvatar() {
@@ -57,11 +66,9 @@ public class ManageForm extends javax.swing.JFrame {
         public void run() {
             while (isRun) {
                 try {
-                    jlblScore.setText("Score: "+Client.cUser.Score);
-
                     offset = (char) Client.GetObj();
                     System.out.print(offset);
-                    switch (offset) {                            
+                    switch (offset) {
                         //có 1 người chơi thoát
                         case '0':
                             listUsers.remove(Client.GetMsg());
@@ -91,8 +98,13 @@ public class ManageForm extends javax.swing.JFrame {
                             if (result == JOptionPane.YES_OPTION) {
                                 listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(userName, "NULL");
+<<<<<<< HEAD
                                 new PlayGameForm(userName, false,"").setVisible(true);
                                 //ManageForm.this.dispose();
+=======
+                                new PlayGameForm(userName, false).setVisible(true);
+                                ManageForm.this.dispose();
+>>>>>>> 686f4745fa49a397f57ae49f0b0658181a472d33
                             }
                             break;
                         //nhận kết quả lời mời
@@ -143,7 +155,6 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
                     JOptionPane.showMessageDialog(ManageForm.this, "Can't connect to server",
                             "Can't connect", JOptionPane.WARNING_MESSAGE);
                     System.exit(0);
@@ -183,7 +194,6 @@ public class ManageForm extends javax.swing.JFrame {
         taChatRoom = new javax.swing.JTextArea();
         jLabelImage = new javax.swing.JLabel();
         btnBrowseImage = new javax.swing.JButton();
-        jlblScore = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -288,8 +298,6 @@ public class ManageForm extends javax.swing.JFrame {
             }
         });
 
-        jlblScore.setText("jLabel1");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -307,22 +315,18 @@ public class ManageForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(btnSend)
-                        .addContainerGap(211, Short.MAX_VALUE))
+                        .addGap(81, 201, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnBrowseImage, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnInvite)
-                                    .addComponent(btnJoinTour, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jlblScore)
-                                    .addComponent(jLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap())))
+                            .addComponent(btnInvite)
+                            .addComponent(btnJoinTour, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBrowseImage, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,19 +336,17 @@ public class ManageForm extends javax.swing.JFrame {
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addComponent(btnInvite)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnJoinTour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jlblScore)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(36, 36, 36)
                         .addComponent(jLabelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBrowseImage))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(btnInvite)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnJoinTour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnBrowseImage)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -407,9 +409,11 @@ public class ManageForm extends javax.swing.JFrame {
     private void btnJoinTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinTourActionPerformed
         try {
             // TODO add your handling code here:
-            String tourName = (String) lTournament.getSelectedValue();
-            Client.SendObj('4');
-            Client.SendMsg(tourName);
+            if(lTournament.getSelectedIndex() != -1){
+                String tourName = (String) lTournament.getSelectedValue();
+                Client.SendObj('4');
+                Client.SendMsg(tourName);
+            }
         } catch (IOException ex) {
             Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -462,7 +466,6 @@ public class ManageForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JLabel jlblScore;
     private javax.swing.JList lTournament;
     private javax.swing.JList lUserOnline;
     private javax.swing.JTextArea taChat;
