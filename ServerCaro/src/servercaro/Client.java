@@ -163,7 +163,6 @@ public class Client extends Thread {
                         Client clientWin = Server.getClient(KQ.UserName);
                         Client clientLose = Server.getClient(KQ.NameEnemy);
                         clientWin.cUser.setScore(clientWin.cUser.getScore()+1);
-                        //System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result+"--"+Server.getClient(KQ.UserName).cUser.Score);
                         break;
                 }
             } catch (Exception ex) {

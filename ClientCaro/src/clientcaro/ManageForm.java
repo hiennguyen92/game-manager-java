@@ -73,7 +73,6 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //nhận danh sách các giải đấu
                         case '2':
-                            Client.cUser.Score = (int)Client.GetObj();
                             listTours = new Vector<>((List<String>) Client.GetObj());
                             lTournament.setListData(listTours);
                             break;
@@ -141,6 +140,7 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     JOptionPane.showMessageDialog(ManageForm.this, "Can't connect to server",
                             "Can't connect", JOptionPane.WARNING_MESSAGE);
                     System.exit(0);
