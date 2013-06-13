@@ -36,17 +36,4 @@ public class DataType {
           this.Type = type;
       }
     };
-    public static class CaroResult implements Serializable {
-
-        public String UserName;
-        public String NameEnemy;
-        public String Result;
-
-        public CaroResult(String name, String enemy, String result) {
-            this.UserName = name;
-            this.NameEnemy = enemy;
-            this.Result = result;
-        }
-    };
-    
 }
