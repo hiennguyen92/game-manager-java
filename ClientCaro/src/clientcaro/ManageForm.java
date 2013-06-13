@@ -5,6 +5,7 @@
 package clientcaro;
 
 import Data.DataType.*;
+import Data.User;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -68,8 +69,10 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //nhận danh sách người onl
                         case '1':
+                            //User user = (User)Client.GetObj();
                             listUsers.add(Client.GetMsg());
                             lUserOnline.setListData(listUsers);
+                            //Client.cUser.Score = user.Score;
                             break;
                         //nhận danh sách các giải đấu
                         case '2':
@@ -81,14 +84,14 @@ public class ManageForm extends javax.swing.JFrame {
                             String userName = Client.GetMsg();
                             int result = JOptionPane.showConfirmDialog(ManageForm.this, userName + " invited you for a game",
                                     "Invite", JOptionPane.YES_NO_OPTION);
-                            Answer answer = new Answer(userName, result);
+                            Answer answer = new Answer(userName, result,"");
                             Client.SendObj('2');
                             Client.SendObj(answer);
                             //trả lời yes thì hiện form chơi game
                             if (result == JOptionPane.YES_OPTION) {
                                 listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(userName, "NULL");
-                                new PlayGameForm(userName, false).setVisible(true);
+                                new PlayGameForm(userName, false,"").setVisible(true);
                                 //ManageForm.this.dispose();
                             }
                             break;
@@ -98,7 +101,7 @@ public class ManageForm extends javax.swing.JFrame {
                             if (answer.Answer == JOptionPane.YES_OPTION) {
                                 listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(answer.UserName, "NULL");
-                                new PlayGameForm(answer.UserName, true).setVisible(true);
+                                new PlayGameForm(answer.UserName, true,answer.NameTour).setVisible(true);
                                 //ManageForm.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
@@ -111,12 +114,12 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //nhận kết quả tham gia giải đấu
                         case '6':
-                            String msg = Client.GetMsg();
-                            if (msg.equals("score")) {
+                            String[] msg = Client.GetMsg().split(":");
+                            if (msg[0].equals("score")) {
                                 JOptionPane.showMessageDialog(ManageForm.this, " your score's too low",
                                         "Rejected", JOptionPane.WARNING_MESSAGE);
-                            } else if (msg.equals("success")) {
-                                new WaitingForm().setVisible(true);
+                            } else if (msg[0].equals("success")) {
+                                new WaitingForm(msg[1]).setVisible(true);
                                 //isRun = false;
                                 //ManageForm.this.dispose();
                             }
@@ -129,8 +132,8 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //Sẵn Sàng Đánh Caro
                         case 'K':
-                            msg = Client.GetMsg();
-                            listClientStatus.put(msg, "OK");
+                            String msgs = Client.GetMsg();
+                            listClientStatus.put(msgs, "OK");
                             break;
                         default:
                             WaitingForm.resume();

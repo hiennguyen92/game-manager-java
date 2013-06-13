@@ -29,7 +29,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     final int TIME = 20;
     
     private char PlayerType;
-    private String nameDoiThu; 
+    private String nameDoiThu;
+    private String NameTour;
     boolean isRun = true;
     boolean isOverTime = false;
     private Square[][] arrSquare;
@@ -55,16 +56,20 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     });
     
 
-    public PlayGameForm(String UserDoiThu,boolean isInviter) {
+    public PlayGameForm(String UserDoiThu,boolean isInviter,String nameTour) {
 
         initComponents();
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         jPGame.setLayout(new GridLayout(Rows, Cols));
         arrSquare = new Square[Rows][Cols];
         btnSend.addActionListener(this);
         chatField.addActionListener(this);
         nameDoiThu = UserDoiThu;
-        setTitle(Client.cUser.UserName+" VS "+UserDoiThu);
+        NameTour = nameTour;
+        if(NameTour == "")
+            setTitle(Client.cUser.UserName+" vs "+UserDoiThu);
+        else
+            setTitle(NameTour+":"+Client.cUser.UserName+" vs "+UserDoiThu);
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 final int a = i, b = j;
@@ -145,14 +150,25 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                     }
                     if(Winner){
                         try {
-                            Client.cUser.Score++;
-                            Client.SendObj('R');
-                            DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu, "WIN");
-                            Client.SendObj(result);
-                            timer.stop();
-                            Winner = false;
-                            setButtonListener(false);
-                            JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE);
+                            if ("".equals(NameTour)) {
+                                Client.cUser.Score++;
+                                Client.SendObj('R');
+                                DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu,"", "WIN");
+                                Client.SendObj(result);
+                                timer.stop();
+                                Winner = false;
+                                setButtonListener(false);
+                                JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE);
+                            }
+                            else{
+                                Client.SendObj('T');
+                                DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu, NameTour, "WIN");
+                                Client.SendObj(result);
+                                timer.stop();
+                                Winner = false;
+                                setButtonListener(false);
+                                JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE);
+                            }
                         } catch (IOException ex) {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }

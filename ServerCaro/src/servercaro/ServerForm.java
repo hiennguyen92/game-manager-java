@@ -72,6 +72,7 @@ public class ServerForm extends javax.swing.JFrame {
                                 //gửi thông tin người mới đăng nhập vào các người đã đăng nhập
                                 Server.cSockets.get(i).SendObj('1');
                                 Server.cSockets.get(i).SendMsg(userName);
+                                //Server.cSockets.get(i).SendObj(Server.getUser(userName));
                                 //gửi thông tin những người đã đăng nhấp đến người mới đăng nhập
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendObj('1');
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(Server.cSockets.get(i).getUserName());

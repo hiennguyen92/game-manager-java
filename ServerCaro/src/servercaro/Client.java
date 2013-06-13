@@ -120,7 +120,7 @@ public class Client extends Thread {
                             SendMsg("score");
                         } else {
                             tour.users.add(cUser);
-                            SendMsg("success");
+                            SendMsg("success:"+tour.name);
                             for (int i = 0; i < tour.users.size(); i++) {
                                 user = Server.getClient(tour.users.get(i).UserName);
                                 user.SendObj('7');
@@ -141,6 +141,7 @@ public class Client extends Thread {
                             Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
                         }
                         break;
+                        //truyền thông số caro
                     case 'X':
                         Caro caro = (Caro) GetObj();
                         user = Server.getClient(caro.NameEnemy);
@@ -151,12 +152,14 @@ public class Client extends Thread {
                         user.SendObj(caro);
                         //System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
                         break;
+                        //xác nhận client sãn sàng
                     case 'K':
                         String[] sss = GetMsg().split(":");
                         user = Server.getClient(sss[1]);
                         user.SendObj('K');
                         user.SendMsg(sss[0]);
                         break;
+                        //kết quả đánh bình thường
                     case 'R':
                         CaroResult KQ = (CaroResult)GetObj();
                         System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result);
@@ -164,6 +167,14 @@ public class Client extends Thread {
                         Client clientLose = Server.getClient(KQ.NameEnemy);
                         clientWin.cUser.setScore(clientWin.cUser.getScore()+1);
                         break;
+                        //Kết quả giải đấu
+                    case 'T':
+                        KQ = (CaroResult)GetObj();
+                        //phải lấy đc tên tour
+                        Tournament Tour = Server.getTour(KQ.NameTour);
+                        Tour.users.add(Server.getUser(KQ.UserName));
+                        
+                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.NameTour+"--"+KQ.Result);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
