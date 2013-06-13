@@ -149,25 +149,22 @@ public class Client extends Thread {
                         caro.NameEnemy = temp;
                         user.SendObj('X');
                         user.SendObj(caro);
-                        System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
+                        //System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
                         break;
                     case 'K':
                         String[] sss = GetMsg().split(":");
                         user = Server.getClient(sss[1]);
-
                         user.SendObj('K');
                         user.SendMsg(sss[0]);
                         break;
-//                    case 'O':
-//                        caro = (Caro)GetObj();
-//                        user = Server.getClient(caro.NameEnemy);
-//                        temp = caro.UserName;
-//                        caro.UserName = caro.NameEnemy;
-//                        caro.NameEnemy = temp;
-//                        user.SendObj('O');
-//                        user.SendObj(caro);
-//                        System.out.print(caro.UserName+"/"+caro.NameEnemy+"/"+caro.i+"/"+caro.j);
-//                        break;
+                    case 'R':
+                        CaroResult KQ = (CaroResult)GetObj();
+                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result);
+                        Client clientWin = Server.getClient(KQ.UserName);
+                        Client clientLose = Server.getClient(KQ.NameEnemy);
+                        clientWin.cUser.setScore(clientWin.cUser.getScore()+1);
+                        //System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result+"--"+Server.getClient(KQ.UserName).cUser.Score);
+                        break;
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

@@ -9,5 +9,5 @@ and open the template in the editor.
     <DriverName>com.microsoft.sqlserver.jdbc.SQLServerDriver</DriverName>
     <ConnectionString>jdbc:sqlserver://localhost:1433;databaseName=CARO</ConnectionString>
     <UserName>sa</UserName>
-    <Password>123456789</Password>
+    <Password>nvh03101992</Password>
 </root>

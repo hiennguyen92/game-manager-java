@@ -5,17 +5,15 @@ import Data.DataType;
 import Data.DataType.Caro;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -28,44 +26,45 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     /**
      * Creates new form CaroGUI
      */
-   // private Socket chatDirectSocket = null;
-    //private PrintWriter out = null;
-    //private BufferedReader in = null;
-    //private String User;
-    //private String Type;
+    final int TIME = 20;
+    
     private char PlayerType;
     private String nameDoiThu; 
     boolean isRun = true;
+    boolean isOverTime = false;
     private Square[][] arrSquare;
     private final int Rows = 20, Cols = 20;
     private  boolean Winner=false,EnemyWinner=false;
-    private int time = 60;
-//    private Timer timer = new Timer(1000, new ActionListener() {
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            lblTime.setText(time + "");
-//            --time;
-//            if (EnemyWinner == true) {
-//                JOptionPane.showMessageDialog(null, "Ban Da Thu", "Ket Qua", JOptionPane.PLAIN_MESSAGE);
-//                timer.stop();
-//            }
-//            if (time == 0) {
-//                time = 60;
-//            }
-//        }
-//    });
+    private int time = TIME;
+    Thread listener;
+    private Timer timer = new Timer(1000, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            lblTime.setText(""+ time);
+            --time;
+            if(time<10){
+                Toolkit.getDefaultToolkit().beep();
+            }
+            if (time == 0) {
+                lblTime.setText("0 RANDOM");
+                time = TIME;
+                isOverTime = true;
+                timer.stop();
+            }
+        }
+    });
     
 
     public PlayGameForm(String UserDoiThu,boolean isInviter) {
 
         initComponents();
-        
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         jPGame.setLayout(new GridLayout(Rows, Cols));
         arrSquare = new Square[Rows][Cols];
         btnSend.addActionListener(this);
         chatField.addActionListener(this);
         nameDoiThu = UserDoiThu;
-        setTitle(Client.cUser.UserName+"==>>"+UserDoiThu);
+        setTitle(Client.cUser.UserName+" VS "+UserDoiThu);
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 final int a = i, b = j;
@@ -80,7 +79,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         jBtnStart.setVisible(isInviter);
         jBtnStart.setEnabled(false);
         jBtnOK.setVisible(!isInviter);
-        Thread listener = new Thread(listen);
+        if(isInviter)
+            jlblStatus.setText("Waiting...");
+        else
+            jlblStatus.setText("Click 'OK'");
+        listener = new Thread(listen);
         listener.start();
     }
 
@@ -89,37 +92,60 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         public void run() {
             while (isRun) {
                 try {
+                    if(isOverTime)
+                    {
+                        while (true) {                            
+                            Random rand = new Random();
+                            int R = rand.nextInt(Rows);
+                            int C = rand.nextInt(Cols);
+                            if(arrSquare[R][C].getValue() == '-'){
+                                arrSquare[R][C].doClick();
+                                isOverTime = false;
+                                break;
+                            }
+                        }
+                    }
                     if(ManageForm.listClientStatus.size()>0){
                         String status = (String)ManageForm.listClientStatus.get(nameDoiThu);
                         if(status.equals("OK")){
                             jBtnStart.setEnabled(true);
+                            jlblStatus.setText("Click 'Start'");
+                            ManageForm.listClientStatus.put(nameDoiThu, "NULL");
                         }
                     }
                     if(ManageForm.listClientCaro.size()>0)
                     {
-                        Caro caro = (Caro)ManageForm.listClientCaro.get(nameDoiThu);
                         
+                        Caro caro = (Caro)ManageForm.listClientCaro.get(nameDoiThu);
                         if(caro.NameEnemy != null){
-                            setButtonListener(true);
+                            timer.start();
+                            jlblStatus.setText("Playing...");
                             if(caro.Type == 'X'){
                                 arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
                                 arrSquare[caro.i][caro.j].setValue('x');
+                                setButtonListener(true);
                                 ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
                                 EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'x', caro.i, caro.j);
                             }
                             else{
                                 arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
                                 arrSquare[caro.i][caro.j].setValue('o');
+                                setButtonListener(true);
                                 ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
                                 EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'o', caro.i, caro.j);
                             }
-                        }
+                        } 
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(100); 
+                    if (EnemyWinner) {
+                        JOptionPane.showMessageDialog(PlayGameForm.this, "You Lose!!!!", "LOSE", JOptionPane.PLAIN_MESSAGE);
+                        timer.stop();
+                        listener.stop();
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(PlayGameForm.this, ex.getMessage(),
-                            "Nhan dc roi", JOptionPane.WARNING_MESSAGE);
+                            "Fail", JOptionPane.WARNING_MESSAGE);
                     System.exit(0);
                 }
             }
@@ -135,10 +161,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         if (e.getSource() == chatField) {
             String chat = chatField.getText();
         }
-        
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 if(e.getSource() == arrSquare[i][j]){
+                    
+                    setButtonListener(false);
                     if(PlayerType == 'x'){
                         arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
                         arrSquare[i][j].setValue('x');
@@ -165,32 +192,33 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }             
                     }
-                    
                     if (Winner == true) {
-                        JOptionPane.showMessageDialog(null, "Bạn Đã Chiến Thắng", "Ket Qua", JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE); 
+                        try {
+                            Client.cUser.Score++;
+                            Client.SendObj('R');
+                            DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu, "WIN");
+                            Client.SendObj(result);
+                        } catch (IOException ex) {
+                            Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                    setButtonListener(false);
+                    time=TIME;
+                    timer.stop();
                 }
                 
             } 
         }  
     }
     
-    public char Type(){
-        for (int i = 0; i < Rows; i++) {
-            for (int j = 0; j < Cols; j++)
-                if(arrSquare[i][j].getValue() == 'x')
-                    return 'o';
-        }
-        return 'x';
-    }
     
     
     public void setButtonListener(boolean isListener) {
         if (isListener) {
             for (int i = 0; i < Rows; i++) {
                 for (int j = 0; j < Cols; j++) {
-                    arrSquare[i][j].addActionListener(this);
+                    if(arrSquare[i][j].getValue() == '-')
+                        arrSquare[i][j].addActionListener(this);
                 }
             }
         }
@@ -225,6 +253,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         lblTime = new javax.swing.JLabel();
         jBtnStart = new javax.swing.JButton();
         jBtnOK = new javax.swing.JButton();
+        jlblStatus = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -261,8 +291,9 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             .addGap(0, 496, Short.MAX_VALUE)
         );
 
-        btnSend.setText("[0,204,255]");
+        btnSend.setText("SEND");
 
+        lblTime.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         lblTime.setText("- -");
 
         jBtnStart.setForeground(new java.awt.Color(0, 204, 255));
@@ -281,6 +312,10 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             }
         });
 
+        jlblStatus.setText("jLabel1");
+
+        jLabel1.setText("Time:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -288,23 +323,23 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPGame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(chatField, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1)))
+                        .addComponent(chatField, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlblStatus)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(46, 46, 46)
-                                .addComponent(lblTime))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jBtnStart)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(lblTime))
+                                    .addComponent(jBtnStart))
                                 .addGap(18, 18, 18)
                                 .addComponent(jBtnOK)))
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -316,12 +351,16 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                 .addContainerGap(39, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblTime)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblTime)
+                            .addComponent(jLabel1))
                         .addGap(87, 87, 87)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jBtnStart)
                             .addComponent(jBtnOK))
-                        .addGap(139, 139, 139)
+                        .addGap(18, 18, 18)
+                        .addComponent(jlblStatus)
+                        .addGap(107, 107, 107)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(13, 13, 13)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -337,19 +376,22 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     private void jBtnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnStartActionPerformed
         // TODO add your handling code here:
        PlayerType = 'x';
+       jlblStatus.setText("Playing...");
        jBtnStart.setEnabled(false);
        setButtonListener(true);
+       timer.start();
     }//GEN-LAST:event_jBtnStartActionPerformed
 
     private void jBtnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnOKActionPerformed
         // TODO add your handling code here:
         try {
+            jlblStatus.setText("Waiting...");
+            jBtnOK.setEnabled(false);
             Client.SendObj('K');
             Client.SendMsg(Client.cUser.UserName+":"+nameDoiThu);
         } catch (IOException ex) {
             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jBtnOK.setEnabled(false);
     }//GEN-LAST:event_jBtnOKActionPerformed
 
     /**
@@ -386,12 +428,14 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JTextField chatField;
     private javax.swing.JButton jBtnOK;
     private javax.swing.JButton jBtnStart;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPGame;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
+    private javax.swing.JLabel jlblStatus;
     private javax.swing.JLabel lblTime;
     private javax.swing.JTextArea messageArea;
     // End of variables declaration//GEN-END:variables
