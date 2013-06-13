@@ -78,7 +78,6 @@ public class ServerForm extends javax.swing.JFrame {
                             }
                             List<String> msg = Server.getAllToursStatus();
                             Server.cSockets.get(Server.cSockets.size() - 1).SendObj('2');
-                            Server.cSockets.get(Server.cSockets.size() - 1).SendObj(Server.cSockets.get(Server.cSockets.size() - 1).cUser.Score);
                             Server.cSockets.get(Server.cSockets.size() - 1).SendObj(msg);
 
                         } else {
