@@ -127,7 +127,6 @@ public class LoginForm extends javax.swing.JFrame {
             Client.SendMsg(password);
             //thành công thì hiện form manage ra
             if (Client.GetMsg().equals("success")) {
-                
                 Client.cUser.UserName = userName;
                 new ManageForm().setVisible(true);
                 this.dispose();

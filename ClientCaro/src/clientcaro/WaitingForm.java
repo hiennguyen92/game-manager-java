@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -20,13 +21,12 @@ public class WaitingForm extends javax.swing.JFrame {
 
     public static Object mPauseLock = new Object();
 
-    public String NameTour;
     /**
      * Creates new form WaitingForm
      */
-    public WaitingForm(String nameTour) {
+    public WaitingForm() {
         initComponents();
-        NameTour = nameTour;
+        this.setTitle(Client.cUser.UserName);
         Thread listener = new Thread(listen);
         listener.start();
     }
@@ -37,10 +37,14 @@ public class WaitingForm extends javax.swing.JFrame {
                 try {
                     char offset = ManageForm.offset;
                     switch (offset) {
+                        //nhận danh sách người chơi
                         case '7':
                             List<String> userNames = (List<String>) Client.GetObj();
                             int nRow = 0;
+                            DefaultTableModel model = (DefaultTableModel) tbUsers.getModel();
+                            model.setRowCount(0);
                             for (int i = 0; i < userNames.size(); i += 2) {
+                                model.addRow(new Object[]{null, null, null});
                                 tbUsers.setValueAt(nRow + 1, nRow, 0);
                                 tbUsers.setValueAt(userNames.get(i), nRow, 1);
                                 if (i + 1 < userNames.size()) {
@@ -53,11 +57,12 @@ public class WaitingForm extends javax.swing.JFrame {
                                 mPauseLock.wait();
                             }
                             break;
+                        //nhận báo hiệu bắt đầu giải đấu và đấu với 1 người chỉ định
                         case '8':
                             String userName = Client.GetMsg();
                             ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                             ManageForm.listClientStatus.put(userName, "NULL");
-                            new PlayGameForm(userName, false,NameTour).setVisible(true);
+                            new PlayGameForm(userName, false).setVisible(true);
                             //ManageForm.this.dispose();
                             ManageForm.resume();
                             synchronized (mPauseLock) {
@@ -106,14 +111,11 @@ public class WaitingForm extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel1.setText("User participated:");
+        jLabel1.setText("Users participated:");
 
         tbUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Cặp đấu", "Player 1", "Player 2"
@@ -162,6 +164,7 @@ public class WaitingForm extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
             // TODO add your handling code here:
+            //gửi báo hiệu thoát giải đấu
             Client.SendObj('5');
         } catch (IOException ex) {
             Logger.getLogger(WaitingForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -172,37 +175,37 @@ public class WaitingForm extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                //new WaitingForm(Nam).setVisible(true);
-//            }
-//        });
-//    }
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(WaitingForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new WaitingForm().setVisible(true);
+            }
+        });
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

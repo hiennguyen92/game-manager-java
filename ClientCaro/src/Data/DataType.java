@@ -14,12 +14,10 @@ public class DataType {
     public static class Answer implements Serializable{
         public String UserName;
         public int Answer;
-        public String NameTour;
         
-        public Answer(String name, int answer,String nameTour){
+        public Answer(String name, int answer){
             UserName = name;
             Answer = answer;
-            NameTour = nameTour;
         }
     };
  public static class Caro implements Serializable{
@@ -37,17 +35,4 @@ public class DataType {
           this.Type = type;
       }
     };
- public static class CaroResult implements Serializable{
-   public String UserName;
-   public String NameEnemy;
-   public String NameTour;
-   public String Result;
-   public CaroResult(String name,String enemy,String nameTour,String result){
-       this.UserName = name;
-       this.NameEnemy = enemy;
-       this.NameTour = nameTour;
-       this.Result = result;
-   }
- };
- 
 }

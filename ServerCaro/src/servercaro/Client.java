@@ -114,13 +114,17 @@ public class Client extends Thread {
                         }
                         Tournament tour = Server.getTour(tourName);
                         SendObj('6');
+                        //full người chơi
                         if (tour.users.size() == tour.nPlayer) {
                             SendMsg("full");
-                        } else if (tour.mPoint > cUser.Score) {
+                        }
+                        //điểm chưa đạt yêu cầu
+                        else if (tour.mPoint > cUser.Score) {
                             SendMsg("score");
-                        } else {
+                        } 
+                        else {
                             tour.users.add(cUser);
-                            SendMsg("success:"+tour.name);
+                            SendMsg("success");
                             for (int i = 0; i < tour.users.size(); i++) {
                                 user = Server.getClient(tour.users.get(i).UserName);
                                 user.SendObj('7');
@@ -137,11 +141,17 @@ public class Client extends Thread {
                         tour = Server.getTourHasUser(cUser);
                         tour.users.remove(cUser);
                         for (int i = 0; i < Server.cSockets.size(); i++) {
+                            //cập nhật lại danh sách tham gia cho các client đã tham gia
+                            if (tour.users.contains(Server.cSockets.get(i).cUser)) {
+                                Server.cSockets.get(i).SendObj('7');
+                                Server.cSockets.get(i).SendObj(tour.getNames());
+                            }
+                            //cập nhật lại trạng thái Tournament
                             Server.cSockets.get(i).SendObj('2');
                             Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
+
                         }
                         break;
-                        //truyền thông số caro
                     case 'X':
                         Caro caro = (Caro) GetObj();
                         user = Server.getClient(caro.NameEnemy);
@@ -150,31 +160,25 @@ public class Client extends Thread {
                         caro.NameEnemy = temp;
                         user.SendObj('X');
                         user.SendObj(caro);
-                        //System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
+                        System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
                         break;
-                        //xác nhận client sãn sàng
                     case 'K':
                         String[] sss = GetMsg().split(":");
                         user = Server.getClient(sss[1]);
+
                         user.SendObj('K');
                         user.SendMsg(sss[0]);
                         break;
-                        //kết quả đánh bình thường
-                    case 'R':
-                        CaroResult KQ = (CaroResult)GetObj();
-                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result);
-                        Client clientWin = Server.getClient(KQ.UserName);
-                        Client clientLose = Server.getClient(KQ.NameEnemy);
-                        clientWin.cUser.setScore(clientWin.cUser.getScore()+1);
-                        break;
-                        //Kết quả giải đấu
-                    case 'T':
-                        KQ = (CaroResult)GetObj();
-                        //phải lấy đc tên tour
-                        Tournament Tour = Server.getTour(KQ.NameTour);
-                        Tour.users.add(Server.getUser(KQ.UserName));
-                        
-                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.NameTour+"--"+KQ.Result);
+//                    case 'O':
+//                        caro = (Caro)GetObj();
+//                        user = Server.getClient(caro.NameEnemy);
+//                        temp = caro.UserName;
+//                        caro.UserName = caro.NameEnemy;
+//                        caro.NameEnemy = temp;
+//                        user.SendObj('O');
+//                        user.SendObj(caro);
+//                        System.out.print(caro.UserName+"/"+caro.NameEnemy+"/"+caro.i+"/"+caro.j);
+//                        break;
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

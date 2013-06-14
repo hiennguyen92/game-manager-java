@@ -5,11 +5,7 @@
 package servercaro;
 
 import DTO.Tournament;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,25 +13,29 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author hieu
+ * @author ADMIN
  */
-public class CreateTourForm extends javax.swing.JFrame {
-
-    Tournament tour = new Tournament();
-
+public class EditTourForm extends javax.swing.JFrame {
+    int idx;
+    Tournament Tour;
+    
     /**
-     * Creates new form CreateTourForm
+     * Creates new form EditTourForm
      */
-    public CreateTourForm() {
-        centreWindow(this);
+    public EditTourForm() {
         initComponents();
     }
-     public static void centreWindow(Window frame) {
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (int) ((dimension.getWidth() - frame.getWidth()) / 3.4);
-        int y = (int) ((dimension.getHeight() - frame.getHeight()) / 3.3);
-        frame.setLocation(x, y);
+    
+    public EditTourForm(Tournament tour) {
+        initComponents();
+        Tour = tour;
+        jtxtName.setText(tour.name);
+        jtxtPlayer.setText(String.valueOf(tour.nPlayer));
+        jtxtGiaiThuong.setText(String.valueOf(tour.prize));
+        jtxtPoint.setText(String.valueOf(tour.mPoint));
+        idx = Server.tournaments.indexOf(tour);
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -54,13 +54,13 @@ public class CreateTourForm extends javax.swing.JFrame {
         jtxtGiaiThuong = new javax.swing.JTextField();
         jtxtPoint = new javax.swing.JTextField();
         btnExit = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
         jtxtPlayer = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Arial", 2, 18)); // NOI18N
-        jLabel1.setText("Create Tournament");
+        jLabel1.setText("Edit Tournament");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setText("Name");
@@ -72,7 +72,7 @@ public class CreateTourForm extends javax.swing.JFrame {
         jLabel3.setText("At least point");
 
         btnCreate.setForeground(new java.awt.Color(0, 204, 255));
-        btnCreate.setText("Create");
+        btnCreate.setText("Edit");
         btnCreate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCreateActionPerformed(evt);
@@ -93,46 +93,43 @@ public class CreateTourForm extends javax.swing.JFrame {
             }
         });
 
-        jtxtPlayer.setText("12");
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel5.setText("Number of players");
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel6.setText("Number of players");
+        jtxtPlayer.setText("12");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
+                        .addComponent(jtxtPoint, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jtxtPrize, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jtxtGiaiThuong, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jtxtName, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(42, 42, 42))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                                .addComponent(jtxtPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jtxtPoint, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jtxtPrize, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jtxtGiaiThuong, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jtxtName, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(31, 31, 31))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jtxtPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(53, 53, 53))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,8 +141,8 @@ public class CreateTourForm extends javax.swing.JFrame {
                     .addComponent(jtxtName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtxtPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                    .addComponent(jLabel5)
+                    .addComponent(jtxtPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtxtPrize)
@@ -158,26 +155,27 @@ public class CreateTourForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        new ManageTourForm().setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_btnExitActionPerformed
-
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
-
+        Tournament tour = new Tournament();
+        
         tour.name = jtxtName.getText();
         tour.nPlayer = Integer.parseInt(jtxtPlayer.getText());
         tour.prize = Integer.parseInt(jtxtGiaiThuong.getText());
         tour.mPoint = Integer.parseInt(jtxtPoint.getText());
 
-        if(Server.getTour(tour.name) == null){
-            Server.tournaments.add(tour);
+        if(Tour.users.size() > tour.nPlayer){
+            JOptionPane.showMessageDialog(this,"The number of players is too small",
+                "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        else if(tour.name.equals(Tour.name) || Server.getTour(tour.name) == null){
+            tour.users = Tour.users;
+            Server.tournaments.set(idx, tour);
             for(int i = 0; i < Server.cSockets.size(); i++){
                 try {
                     List<String> msg = Server.getAllToursStatus();
@@ -187,15 +185,21 @@ public class CreateTourForm extends javax.swing.JFrame {
                     Logger.getLogger(CreateTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-                
+
             new ManageTourForm().setVisible(true);
             this.dispose();
         }
         else{
             JOptionPane.showMessageDialog(this,"The tour's name is already existed",
-                                        "Error", JOptionPane.WARNING_MESSAGE);
+                "Error", JOptionPane.WARNING_MESSAGE);
         }
+        
     }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        new ManageTourForm().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnExitActionPerformed
 
     /**
      * @param args the command line arguments
@@ -214,20 +218,20 @@ public class CreateTourForm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CreateTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CreateTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CreateTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CreateTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditTourForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CreateTourForm().setVisible(true);
+                new EditTourForm().setVisible(true);
             }
         });
     }
@@ -237,7 +241,7 @@ public class CreateTourForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField jtxtGiaiThuong;
     private javax.swing.JTextField jtxtName;
     private javax.swing.JTextField jtxtPlayer;
