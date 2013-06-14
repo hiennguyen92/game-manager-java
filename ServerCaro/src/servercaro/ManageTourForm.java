@@ -51,6 +51,11 @@ public class ManageTourForm extends javax.swing.JFrame {
                 if (jcomboGiaiDau.getSelectedIndex() != -1) {
                     ShowTourInfo();
                 }
+                if(Tour != null && Tour.nPlayer > 1){
+                    if(Tour.users.size()==Tour.nPlayer){
+                        btnStart.doClick();
+                    }
+                }
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
@@ -90,6 +95,7 @@ public class ManageTourForm extends javax.swing.JFrame {
         btnStart = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -152,6 +158,13 @@ public class ManageTourForm extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Ghi Xuống");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -167,12 +180,6 @@ public class ManageTourForm extends javax.swing.JFrame {
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnStart)
-                .addGap(47, 47, 47))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
@@ -184,6 +191,14 @@ public class ManageTourForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnEdit)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1)
+                    .addComponent(btnStart))
+                .addGap(31, 31, 31))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -203,7 +218,9 @@ public class ManageTourForm extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(86, 86, 86)))
+                        .addGap(45, 45, 45)
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jcomboAddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,7 +293,7 @@ public class ManageTourForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "not enough people",
                     "Error", JOptionPane.WARNING_MESSAGE);
         } else {
-            jcomboGiaiDau.removeItem(Tour.name);
+            //jcomboGiaiDau.removeItem(Tour.name);
             for (int i = 0; i < Tour.users.size(); i += 2) {
                 try {
                     Client client = Server.getClient(Tour.users.get(i + 1).UserName);
@@ -290,7 +307,9 @@ public class ManageTourForm extends javax.swing.JFrame {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            Tour.users.clear();  
         }
+        Tour.nPlayer = Tour.nPlayer/2;
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
@@ -322,6 +341,14 @@ public class ManageTourForm extends javax.swing.JFrame {
                     "Error", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Tournament tour = Server.getTour((String)jcomboGiaiDau.getSelectedItem());
+        for (int i = 0; i < tour.level.size(); i++) {
+            System.out.println(tour.level.get(Server.allUsers.get(i).UserName));
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -364,6 +391,7 @@ public class ManageTourForm extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnStart;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

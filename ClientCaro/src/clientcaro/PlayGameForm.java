@@ -66,7 +66,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         chatField.addActionListener(this);
         nameDoiThu = UserDoiThu;
         NameTour = nameTour;
-        if(NameTour == "")
+        if("".equals(NameTour))
             setTitle(Client.cUser.UserName+" vs "+UserDoiThu);
         else
             setTitle(NameTour+":"+Client.cUser.UserName+" vs "+UserDoiThu);
@@ -84,6 +84,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         jBtnStart.setVisible(isInviter);
         jBtnStart.setEnabled(false);
         jBtnOK.setVisible(!isInviter);
+        jbtnClose.setVisible(false);
         if(isInviter)
             jlblStatus.setText("Waiting...");
         else
@@ -92,11 +93,14 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         listener.start();
     }
 
+    int result = JOptionPane.NO_OPTION;
+    
     Runnable listen = new Runnable(){
         @Override
         public void run() {
             while (isRun) {
                 try {
+                    jlblScore.setText("Score: "+Client.cUser.Score);
                     if(isOverTime)
                     {
                         while (true) {                            
@@ -120,7 +124,6 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                     }
                     if(ManageForm.listClientCaro.size()>0)
                     {
-                        
                         Caro caro = (Caro)ManageForm.listClientCaro.get(nameDoiThu);
                         if(caro.NameEnemy != null){
                             timer.start();
@@ -146,10 +149,12 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                         timer.stop();
                         EnemyWinner = false;
                         setButtonListener(false);
-                        JOptionPane.showMessageDialog(PlayGameForm.this, "You Lose!!!!", "LOSE", JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showMessageDialog(PlayGameForm.this, "You Lose!!!!", "LOSE", JOptionPane.OK_OPTION);
+                        jbtnClose.doClick();
                     }
                     if(Winner){
                         try {
+                            JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.OK_OPTION);
                             if ("".equals(NameTour)) {
                                 Client.cUser.Score++;
                                 Client.SendObj('R');
@@ -157,8 +162,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                                 Client.SendObj(result);
                                 timer.stop();
                                 Winner = false;
-                                setButtonListener(false);
-                                JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE);
+                                setButtonListener(false); 
                             }
                             else{
                                 Client.SendObj('T');
@@ -167,8 +171,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                                 timer.stop();
                                 Winner = false;
                                 setButtonListener(false);
-                                JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE);
                             }
+                            jbtnClose.doClick();
                         } catch (IOException ex) {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -195,7 +199,6 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 if(e.getSource() == arrSquare[i][j]){
-                    
                     setButtonListener(false);
                     if(PlayerType == 'x'){
                         arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
@@ -223,17 +226,6 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }             
                     }
-//                    if (Winner == true) {
-//                        JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.PLAIN_MESSAGE); 
-//                        try {
-//                            Client.cUser.Score++;
-//                            Client.SendObj('R');
-//                            DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu, "WIN");
-//                            Client.SendObj(result);
-//                        } catch (IOException ex) {
-//                            Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                    }
                     time=TIME;
                     timer.stop();
                 }
@@ -286,6 +278,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         jBtnOK = new javax.swing.JButton();
         jlblStatus = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jlblScore = new javax.swing.JLabel();
+        jbtnClose = new javax.swing.JButton();
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -347,6 +341,15 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
         jLabel1.setText("Time:");
 
+        jlblScore.setText("jLabel2");
+
+        jbtnClose.setText("Close");
+        jbtnClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnCloseActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -372,19 +375,27 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                                         .addComponent(lblTime))
                                     .addComponent(jBtnStart))
                                 .addGap(18, 18, 18)
-                                .addComponent(jBtnOK)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jBtnOK)
+                                    .addComponent(jlblScore))))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jbtnClose)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(39, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jbtnClose)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblTime)
-                            .addComponent(jLabel1))
+                            .addComponent(jLabel1)
+                            .addComponent(jlblScore))
                         .addGap(87, 87, 87)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jBtnStart)
@@ -424,6 +435,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jBtnOKActionPerformed
+
+    private void jbtnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnCloseActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_jbtnCloseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -466,6 +482,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
+    private javax.swing.JButton jbtnClose;
+    private javax.swing.JLabel jlblScore;
     private javax.swing.JLabel jlblStatus;
     private javax.swing.JLabel lblTime;
     private javax.swing.JTextArea messageArea;

@@ -6,6 +6,7 @@ package servercaro;
 
 import DAO.UserDAO;
 import DTO.Tournament;
+import DTO.User;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -76,6 +77,10 @@ public class ServerForm extends javax.swing.JFrame {
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendObj('1');
                                 Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(Server.cSockets.get(i).getUserName());
                             }
+
+            
+                            Server.cSockets.get(Server.cSockets.size()-1).SendObj('U');
+                            Server.cSockets.get(Server.cSockets.size()-1).SendMsg(Server.cSockets.get(Server.cSockets.size() - 1).cUser.UserName+":"+Server.cSockets.get(Server.cSockets.size() - 1).cUser.Score);
                             List<String> msg = Server.getAllToursStatus();
                             Server.cSockets.get(Server.cSockets.size() - 1).SendObj('2');
                             Server.cSockets.get(Server.cSockets.size() - 1).SendObj(msg);

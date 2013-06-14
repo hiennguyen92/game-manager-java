@@ -5,7 +5,10 @@
 package DTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -19,9 +22,11 @@ public class Tournament {
     public int mPoint; //điểm thấp nhất dc tham gia
     public boolean isStart; //trạng thái đã bắt đầu hay chưa
     public List<User> users;
+    public Map<String,Integer> level;
 
     public Tournament() {
         users = new ArrayList<>();
+        level = new HashMap<>();
         isStart = false;
     }
     

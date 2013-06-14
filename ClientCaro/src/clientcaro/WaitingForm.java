@@ -20,7 +20,7 @@ import javax.swing.table.DefaultTableModel;
 public class WaitingForm extends javax.swing.JFrame {
 
     public static Object mPauseLock = new Object();
-
+    public String TourName;
     /**
      * Creates new form WaitingForm
      */
@@ -33,6 +33,7 @@ public class WaitingForm extends javax.swing.JFrame {
     public WaitingForm(String tourName){
         initComponents();
         this.setTitle(Client.cUser.UserName);
+        TourName = tourName;
         lbTourName.setText(tourName);
         Thread listener = new Thread(listen);
         listener.start();
@@ -69,7 +70,7 @@ public class WaitingForm extends javax.swing.JFrame {
                             String userName = Client.GetMsg();
                             ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                             ManageForm.listClientStatus.put(userName, "NULL");
-                            new PlayGameForm(userName, false,"").setVisible(true);
+                            new PlayGameForm(userName, false,TourName).setVisible(true);
                             //ManageForm.this.dispose();
                             ManageForm.resume();
                             synchronized (mPauseLock) {

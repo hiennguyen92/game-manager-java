@@ -66,6 +66,7 @@ public class Client extends Thread {
                 char offset = (char) GetObj();
                 switch (offset) {
                     //nhận thông báo tắt
+                    
                     case '0':
                         for (int i = 0; i < Server.cSockets.size(); i++) {
                             if (!Server.cSockets.get(i).cUser.UserName.equals(cUser.UserName)) {
@@ -116,15 +117,16 @@ public class Client extends Thread {
                         SendObj('6');
                         //full người chơi
                         if (tour.users.size() == tour.nPlayer) {
-                            SendMsg("full");
+                            SendMsg("full:null");
                         }
                         //điểm chưa đạt yêu cầu
                         else if (tour.mPoint > cUser.Score) {
-                            SendMsg("score");
+                            SendMsg("score:null");
                         } 
                         else {
                             tour.users.add(cUser);
-                            SendMsg("success");
+                            SendMsg("success:"+tour.name);
+                            tour.level.put(cUser.UserName, 0);
                             for (int i = 0; i < tour.users.size(); i++) {
                                 user = Server.getClient(tour.users.get(i).UserName);
                                 user.SendObj('7');
@@ -160,7 +162,7 @@ public class Client extends Thread {
                         caro.NameEnemy = temp;
                         user.SendObj('X');
                         user.SendObj(caro);
-                        System.out.print(caro.UserName + "/" + caro.NameEnemy + "/" + caro.i + "/" + caro.j);
+                        
                         break;
                     case 'K':
                         String[] sss = GetMsg().split(":");
@@ -183,8 +185,9 @@ public class Client extends Thread {
                         //phải lấy đc tên tour
                         Tournament Tour = Server.getTour(KQ.NameTour);
                         Tour.users.add(Server.getUser(KQ.UserName));
-                        
-                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.NameTour+"--"+KQ.Result);
+                        Server.getClient(KQ.UserName).cUser.setScore(Server.getClient(KQ.UserName).cUser.getScore()+1);
+                        Tour.level.put(KQ.UserName, Tour.level.get(KQ.UserName)+1);
+                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.NameTour+"--"+KQ.Result+"--->"+Tour.level.get(KQ.UserName));
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

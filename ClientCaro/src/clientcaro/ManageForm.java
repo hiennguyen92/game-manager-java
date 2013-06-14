@@ -7,6 +7,8 @@ package clientcaro;
 import Data.DataType.*;
 import Data.User;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,31 +39,20 @@ public class ManageForm extends javax.swing.JFrame {
      * Creates new form ManageForm
      */
     public ManageForm() {
-        initComponents();
-        ShowAvatar();
-        this.setTitle(Client.cUser.UserName);
-        listUsers = new Vector<>();
-        listTours = new Vector<>();
-        listClientCaro = new HashMap<>();
-        listClientStatus = new HashMap<>();
-        Thread listener = new Thread(listen);
-        listener.start();
-    }
-
-    private void ShowAvatar() {
-        Icon ii = new ImageIcon(getClass().getResource("images.jpg"));
-        jLabelImage.setIcon(ii);
-    }
-    Runnable listen = new Runnable() {
+        this.listen = new Runnable() {
         @Override
         public void run() {
             while (isRun) {
                 try {
                     jlblScore.setText("Score: "+Client.cUser.Score);
-
                     offset = (char) Client.GetObj();
                     System.out.print(offset);
-                    switch (offset) {                            
+                    switch (offset) { 
+                        case 'U':
+                            String[] Info = Client.GetMsg().split(":");
+                            Client.cUser.UserName = Info[0];
+                            Client.cUser.Score = Integer.parseInt(Info[1]);
+                            break;
                         //có 1 người chơi thoát
                         case '0':
                             listUsers.remove(Client.GetMsg());
@@ -69,7 +60,7 @@ public class ManageForm extends javax.swing.JFrame {
                             break;
                         //nhận danh sách người onl
                         case '1':
-                            //User user = (User)Client.GetObj();
+                            
                             listUsers.add(Client.GetMsg());
                             lUserOnline.setListData(listUsers);
                             //Client.cUser.Score = user.Score;
@@ -99,9 +90,11 @@ public class ManageForm extends javax.swing.JFrame {
                         case '4':
                             answer = (Answer) Client.GetObj();
                             if (answer.Answer == JOptionPane.YES_OPTION) {
+                                
                                 listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(answer.UserName, "NULL");
                                 new PlayGameForm(answer.UserName, true,answer.NameTour).setVisible(true);
+                                
                                 //ManageForm.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
@@ -118,10 +111,11 @@ public class ManageForm extends javax.swing.JFrame {
                             if (msg[0].equals("score")) {
                                 JOptionPane.showMessageDialog(ManageForm.this, " your score's too low",
                                         "Rejected", JOptionPane.WARNING_MESSAGE);
+                            }else if (msg[0].equals("full")) {
+                                JOptionPane.showMessageDialog(ManageForm.this, "full",
+                                        "Rejected", JOptionPane.WARNING_MESSAGE);
                             } else if (msg[0].equals("success")) {
                                 new WaitingForm(msg[1]).setVisible(true);
-                                //isRun = false;
-                                //ManageForm.this.dispose();
                             }
                             break;
                         //thông tin caro
@@ -136,6 +130,7 @@ public class ManageForm extends javax.swing.JFrame {
                             listClientStatus.put(msgs, "OK");
                             break;
                         default:
+                            
                             WaitingForm.resume();
                             synchronized (mPauseLock) {
                                 mPauseLock.wait();
@@ -151,6 +146,22 @@ public class ManageForm extends javax.swing.JFrame {
             }
         }
     };
+        initComponents();
+        ShowAvatar();
+        this.setTitle(Client.cUser.UserName);
+        listUsers = new Vector<>();
+        listTours = new Vector<>();
+        listClientCaro = new HashMap<>();
+        listClientStatus = new HashMap<>();
+        Thread listener = new Thread(listen);
+        listener.start();
+    }
+
+    private void ShowAvatar() {
+        Icon ii = new ImageIcon(getClass().getResource("images.jpg"));
+        jLabelImage.setIcon(ii);
+    }
+    Runnable listen;
 
     public static void resume() {
         synchronized (mPauseLock) {

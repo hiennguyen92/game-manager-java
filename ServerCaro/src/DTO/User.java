@@ -4,6 +4,7 @@
  */
 package DTO;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -11,7 +12,7 @@ import java.util.Date;
  *
  * @author ADMIN
  */
-public class User {
+public class User implements Serializable{
     public String UserName;
     public String Password;
     public int Score;
