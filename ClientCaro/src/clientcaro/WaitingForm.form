@@ -81,7 +81,7 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="0" red="0" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Users participated:"/>
+        <Property name="text" type="java.lang.String" value="User participated:"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -94,7 +94,7 @@
         <Component class="javax.swing.JTable" name="tbUsers">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="3" rowCount="0">
+              <Table columnCount="3" rowCount="4">
                 <Column editable="true" title="C&#x1eb7;p &#x111;&#x1ea5;u" type="java.lang.Object"/>
                 <Column editable="true" title="Player 1" type="java.lang.Object"/>
                 <Column editable="true" title="Player 2" type="java.lang.Object"/>

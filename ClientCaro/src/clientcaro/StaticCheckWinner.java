@@ -4,6 +4,10 @@
  */
 package clientcaro;
 
+import java.awt.Color;
+import java.awt.Insets;
+import javax.swing.border.Border;
+
 /**
  *
  * @author Nguyen Hien
@@ -20,6 +24,13 @@ public class StaticCheckWinner {
                count_Ngang = 0;
            }
            if (count_Ngang == 5) {
+               for (int l = j; l >= j - 4; l--) {
+                   //matrix[curRow][l].setBorderPainted(false);
+                   //matrix[curRow][l].setBorder(null);
+                   //matrix[curRow][l].setBorderPainted(false);
+                   matrix[curRow][l].setSize(matrix[curRow][l].getWidth()+10,
+                           matrix[curRow][l].getHeight()+10);
+               }
                return true;
            }
        }
@@ -33,6 +44,11 @@ public class StaticCheckWinner {
                count_Doc = 0;
            }
            if (count_Doc == 5) {
+               for (int l = i; l >= i - 4; l--) {
+                   //matrix[l][curCol].setVisible(false);
+                   matrix[l][curCol].setSize(matrix[l][curCol].getWidth() + 10,
+                           matrix[l][curCol].getHeight() + 10);
+               }
                return true;
            }
        }
@@ -54,6 +70,9 @@ public class StaticCheckWinner {
                count_Cheo_Trai = 0;
            }
            if (count_Cheo_Trai == 5) {
+//               for (int l = i; l >= i - 4; l--) {
+//                   matrix[curCol][l].setBackground(Color.blue);
+//               }
                return true;
            }
        }
