@@ -169,16 +169,22 @@ public class Client extends Thread {
                         user.SendObj('K');
                         user.SendMsg(sss[0]);
                         break;
-//                    case 'O':
-//                        caro = (Caro)GetObj();
-//                        user = Server.getClient(caro.NameEnemy);
-//                        temp = caro.UserName;
-//                        caro.UserName = caro.NameEnemy;
-//                        caro.NameEnemy = temp;
-//                        user.SendObj('O');
-//                        user.SendObj(caro);
-//                        System.out.print(caro.UserName+"/"+caro.NameEnemy+"/"+caro.i+"/"+caro.j);
-//                        break;
+                        //kết quả đánh bình thường
+                    case 'R':
+                        CaroResult KQ = (CaroResult)GetObj();
+                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result);
+                        Client clientWin = Server.getClient(KQ.UserName);
+                        Client clientLose = Server.getClient(KQ.NameEnemy);
+                        clientWin.cUser.setScore(clientWin.cUser.getScore()+1);
+                        break;
+                        //Kết quả giải đấu
+                    case 'T':
+                        KQ = (CaroResult)GetObj();
+                        //phải lấy đc tên tour
+                        Tournament Tour = Server.getTour(KQ.NameTour);
+                        Tour.users.add(Server.getUser(KQ.UserName));
+                        
+                        System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.NameTour+"--"+KQ.Result);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

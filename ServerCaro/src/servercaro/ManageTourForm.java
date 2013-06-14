@@ -284,7 +284,7 @@ public class ManageTourForm extends javax.swing.JFrame {
                     client.SendMsg(Tour.users.get(i).UserName);
                     client = Server.getClient(Tour.users.get(i).UserName);
                     client.SendObj('4');
-                    Answer answer = new Answer(Tour.users.get(i + 1).UserName, JOptionPane.YES_OPTION);
+                    Answer answer = new Answer(Tour.users.get(i + 1).UserName, JOptionPane.YES_OPTION,Tour.name);
                     client.SendObj(answer);
                 } catch (IOException ex) {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);

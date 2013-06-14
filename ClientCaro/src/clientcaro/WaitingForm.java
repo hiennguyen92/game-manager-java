@@ -30,6 +30,13 @@ public class WaitingForm extends javax.swing.JFrame {
         Thread listener = new Thread(listen);
         listener.start();
     }
+    public WaitingForm(String tourName){
+        initComponents();
+        this.setTitle(Client.cUser.UserName);
+        lbTourName.setText(tourName);
+        Thread listener = new Thread(listen);
+        listener.start();
+    }
     Runnable listen = new Runnable() {
         @Override
         public void run() {
@@ -62,7 +69,7 @@ public class WaitingForm extends javax.swing.JFrame {
                             String userName = Client.GetMsg();
                             ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                             ManageForm.listClientStatus.put(userName, "NULL");
-                            new PlayGameForm(userName, false).setVisible(true);
+                            new PlayGameForm(userName, false,"").setVisible(true);
                             //ManageForm.this.dispose();
                             ManageForm.resume();
                             synchronized (mPauseLock) {
@@ -98,6 +105,7 @@ public class WaitingForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbUsers = new javax.swing.JTable();
+        lbTourName = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -126,6 +134,9 @@ public class WaitingForm extends javax.swing.JFrame {
         tbUsers.getColumnModel().getColumn(1).setResizable(false);
         tbUsers.getColumnModel().getColumn(2).setResizable(false);
 
+        lbTourName.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lbTourName.setText("jLabel2");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -145,17 +156,23 @@ public class WaitingForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(136, 136, 136)
+                .addComponent(lbTourName)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(lbTourName)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         pack();
@@ -210,6 +227,7 @@ public class WaitingForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbTitle;
+    private javax.swing.JLabel lbTourName;
     private javax.swing.JTable tbUsers;
     // End of variables declaration//GEN-END:variables
 }
