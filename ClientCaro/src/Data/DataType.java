@@ -15,11 +15,12 @@ public class DataType {
         public String UserName;
         public int Answer;
         public String NameTour;
-        
-        public Answer(String name, int answer,String nameTour){
+        public boolean IsSecond;
+        public Answer(String name, int answer,String nameTour, boolean isSecond){
             UserName = name;
             Answer = answer;
-            NameTour = nameTour;
+            NameTour = nameTour;        
+            IsSecond = isSecond;
         }
     };
  public static class Caro implements Serializable{

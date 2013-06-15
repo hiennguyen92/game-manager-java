@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -80,27 +81,27 @@ public class Client extends Thread {
                     //nhận lời mời
                     case 1:
                         String userName = GetMsg();
-                        Client user = Server.getClient(userName);
+                        Client client = Server.getClient(userName);
                         //gửi lời mời tới người đó
-                        user.SendObj(3);
-                        user.SendMsg(cUser.UserName);
+                        client.SendObj(3);
+                        client.SendMsg(cUser.UserName);
                         break;
                     //nhận trả lời lời mời
                     case 2:
                         Answer answer = (Answer) GetObj();
-                        user = Server.getClient(answer.UserName);
+                        client = Server.getClient(answer.UserName);
                         //gửi trả lời tới người đó
-                        user.SendObj(4);
+                        client.SendObj(4);
                         answer.UserName = cUser.UserName;
-                        user.SendObj(answer);
+                        client.SendObj(answer);
                         break;
                     //nhận cập nhật khung chat
                     case 3:
                         String msg = GetMsg();
                         for (int i = 0; i < Server.cSockets.size(); i++) {
-                            user = Server.cSockets.get(i);
-                            user.SendObj(5);
-                            user.SendMsg(cUser.UserName + ": " + msg);
+                            client = Server.cSockets.get(i);
+                            client.SendObj(5);
+                            client.SendMsg(cUser.UserName + ": " + msg);
                         }
                         break;
                     // nhận yêu cầu tham gia tour
@@ -128,9 +129,9 @@ public class Client extends Thread {
                             SendMsg("success:"+tour.name);
                             tour.level.put(cUser.UserName, 0);
                             for (int i = 0; i < tour.users.size(); i++) {
-                                user = Server.getClient(tour.users.get(i).UserName);
-                                user.SendObj(7);
-                                user.SendObj(tour.getNames());
+                                client = Server.getClient(tour.users.get(i).UserName);
+                                client.SendObj(7);
+                                client.SendObj(tour.getNames());
                             }
                             for (int i = 0; i < Server.cSockets.size(); i++) {
                                 Server.cSockets.get(i).SendObj(2);
@@ -156,22 +157,22 @@ public class Client extends Thread {
                         break;
                     case -1:
                         Caro caro = (Caro) GetObj();
-                        user = Server.getClient(caro.NameEnemy);
+                        client = Server.getClient(caro.NameEnemy);
                         String temp = caro.UserName;
                         caro.UserName = caro.NameEnemy;
                         caro.NameEnemy = temp;
-                        user.SendObj(-1);
-                        user.SendObj(caro);
+                        client.SendObj(-1);
+                        client.SendObj(caro);
                         
                         break;
                     case -2:
                         String[] sss = GetMsg().split(":");
-                        user = Server.getClient(sss[1]);
+                        client = Server.getClient(sss[1]);
 
-                        user.SendObj(-2);
-                        user.SendMsg(sss[0]);
+                        client.SendObj(-2);
+                        client.SendMsg(sss[0]);
                         break;
-                        //kết quả đánh bình thường
+                    //kết quả đánh bình thường
                     case -3:
                         CaroResult KQ = (CaroResult)GetObj();
                         System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.Result);
@@ -179,15 +180,39 @@ public class Client extends Thread {
                         Client clientLose = Server.getClient(KQ.NameEnemy);
                         clientWin.cUser.setScore(clientWin.cUser.getScore()+1);
                         break;
-                        //Kết quả giải đấu
+                    //Kết quả giải đấu
                     case -4:
                         KQ = (CaroResult)GetObj();
-                        //phải lấy đc tên tour
                         Tournament Tour = Server.getTour(KQ.NameTour);
-                        Tour.users.add(Server.getUser(KQ.UserName));
-                        Server.getClient(KQ.UserName).cUser.setScore(Server.getClient(KQ.UserName).cUser.getScore()+1);
-                        Tour.level.put(KQ.UserName, Tour.level.get(KQ.UserName)+1);
+                        Tour.users.add(cUser);
+                        for (int i = 0; i < Tour.users.size(); i++) {
+                            client = Server.getClient(Tour.users.get(i).UserName);
+                            client.SendObj(7);
+                            client.SendObj(Tour.getNames());
+                        }
+                        //người thắng cuối cùng
+                        if(Tour.users.size() == 1 && Tour.nPlayer == 1){
+                            cUser.Score += Tour.prize;
+                            SendObj(10);
+                            SendMsg(String.valueOf(Tour.prize));
+                        }
+                        //các cặp khác xong hết thì bắt đầu chia cặp đánh tiếp
+                        else if(Tour.users.size() == Tour.nPlayer){
+                            Tour.nPlayer = Tour.nPlayer / 2;
+                            for (int i = 0; i < Tour.users.size(); i += 2) {
+                                client = Server.getClient(Tour.users.get(i).UserName);
+                                client.SendObj(8);
+                                answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION, Tour.name, false);
+                                client.SendObj(answer);
+                                client = Server.getClient(Tour.users.get(i + 1).UserName);
+                                client.SendObj(8);
+                                answer = new Answer(Tour.users.get(i).UserName, JOptionPane.YES_OPTION, Tour.name, true);
+                                client.SendObj(answer);                               
+                            }
+                            Tour.users.clear();
+                        }
                         System.out.println(KQ.UserName+"--"+KQ.NameEnemy+"--"+KQ.NameTour+"--"+KQ.Result+"--->"+Tour.level.get(KQ.UserName));
+                        break;
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

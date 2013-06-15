@@ -75,7 +75,7 @@ public class ManageForm extends javax.swing.JFrame {
                             String userName = Client.GetMsg();
                             int result = JOptionPane.showConfirmDialog(ManageForm.this, userName + " invited you for a game",
                                     "Invite", JOptionPane.YES_NO_OPTION);
-                            Answer answer = new Answer(userName, result,"");
+                            Answer answer = new Answer(userName, result,"", true);
                             Client.SendObj(2);
                             Client.SendObj(answer);
                             //trả lời yes thì hiện form chơi game

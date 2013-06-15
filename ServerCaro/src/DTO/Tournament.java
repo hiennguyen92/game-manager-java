@@ -46,4 +46,13 @@ public class Tournament {
         }
         return false;
     }
+    
+    //lấy 1 người chơi có tên name
+    public User getUser(String name){
+        for(int i = 0; i < users.size(); i++){
+            if(users.get(i).UserName.equals(name))
+                return users.get(i);
+        }
+        return null;
+    }
 }

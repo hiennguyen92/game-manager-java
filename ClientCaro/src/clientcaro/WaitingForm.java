@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -21,6 +22,7 @@ public class WaitingForm extends javax.swing.JFrame {
 
     public static Object mPauseLock = new Object();
     public String TourName;
+    public boolean isRun = true;
     /**
      * Creates new form WaitingForm
      */
@@ -41,7 +43,7 @@ public class WaitingForm extends javax.swing.JFrame {
     Runnable listen = new Runnable() {
         @Override
         public void run() {
-            while (true) {
+            while (isRun) {
                 try {
                     int offset = ManageForm.offset;
                     switch (offset) {
@@ -67,15 +69,19 @@ public class WaitingForm extends javax.swing.JFrame {
                             break;
                         //nhận báo hiệu bắt đầu giải đấu và đấu với 1 người chỉ định
                         case 8:
-                            String userName = Client.GetMsg();
-                            ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
-                            ManageForm.listClientStatus.put(userName, "NULL");
-                            new PlayGameForm(userName, false,TourName).setVisible(true);
-                            //ManageForm.this.dispose();
+                            DataType.Answer answer = (DataType.Answer)Client.GetObj();
+                            ManageForm.listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
+                            ManageForm.listClientStatus.put(answer.UserName, "NULL");
+                            new PlayGameForm(answer.UserName, answer.IsSecond, answer.NameTour).setVisible(true);
+                            WaitingForm.this.setVisible(false);
+                            isRun = false;
                             ManageForm.resume();
-                            synchronized (mPauseLock) {
-                                mPauseLock.wait();
-                            }
+                            break;
+                        case 10:
+                            String msg = Client.GetMsg();
+                            JOptionPane.showMessageDialog(null, "You are the champion of the tournament " + TourName + "Score you gained: " + msg, "Champion", JOptionPane.OK_OPTION);
+                            
+                            WaitingForm.this.setVisible(false);
                             break;
 
                     }

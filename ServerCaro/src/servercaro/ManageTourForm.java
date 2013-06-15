@@ -293,23 +293,24 @@ public class ManageTourForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "not enough people",
                     "Error", JOptionPane.WARNING_MESSAGE);
         } else {
-            //jcomboGiaiDau.removeItem(Tour.name);
+            Tour.nPlayer = Tour.nPlayer / 2;
+            jcomboGiaiDau.removeItem(Tour.name);
             for (int i = 0; i < Tour.users.size(); i += 2) {
                 try {
-                    Client client = Server.getClient(Tour.users.get(i + 1).UserName);
+                    Client client = Server.getClient(Tour.users.get(i).UserName);
                     client.SendObj(8);
-                    client.SendMsg(Tour.users.get(i).UserName);
-                    client = Server.getClient(Tour.users.get(i).UserName);
-                    client.SendObj(4);
-                    Answer answer = new Answer(Tour.users.get(i + 1).UserName, JOptionPane.YES_OPTION,Tour.name);
+                    Answer answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION, Tour.name, false);
+                    client.SendObj(answer);
+                    client = Server.getClient(Tour.users.get(i + 1).UserName);
+                    client.SendObj(8);
+                    answer = new Answer(Tour.users.get(i).UserName, JOptionPane.YES_OPTION, Tour.name, true);
                     client.SendObj(answer);
                 } catch (IOException ex) {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            Tour.users.clear();  
+            Tour.users.clear();
         }
-        Tour.nPlayer = Tour.nPlayer/2;
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed

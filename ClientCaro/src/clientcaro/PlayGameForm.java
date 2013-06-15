@@ -155,7 +155,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                     if(Winner){
                         try {
                             JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.OK_OPTION);
-                            if ("".equals(NameTour)) {
+                            if (NameTour.equals("")) {
                                 Client.cUser.Score++;
                                 Client.SendObj(-3);
                                 DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu,"", "WIN");
@@ -171,6 +171,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                                 timer.stop();
                                 Winner = false;
                                 setButtonListener(false);
+                                new WaitingForm(Client.cUser.UserName).setVisible(true);
                             }
                             jbtnClose.doClick();
                         } catch (IOException ex) {
