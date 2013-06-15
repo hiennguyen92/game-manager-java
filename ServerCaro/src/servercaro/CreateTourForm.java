@@ -181,7 +181,7 @@ public class CreateTourForm extends javax.swing.JFrame {
             for(int i = 0; i < Server.cSockets.size(); i++){
                 try {
                     List<String> msg = Server.getAllToursStatus();
-                    Server.cSockets.get(i).SendObj('2');
+                    Server.cSockets.get(i).SendObj(2);
                     Server.cSockets.get(i).SendObj(msg);
                 } catch (IOException ex) {
                     Logger.getLogger(CreateTourForm.class.getName()).log(Level.SEVERE, null, ex);

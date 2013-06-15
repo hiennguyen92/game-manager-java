@@ -157,7 +157,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             JOptionPane.showMessageDialog(null, "You Win!!!", "WIN", JOptionPane.OK_OPTION);
                             if ("".equals(NameTour)) {
                                 Client.cUser.Score++;
-                                Client.SendObj('R');
+                                Client.SendObj(-3);
                                 DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu,"", "WIN");
                                 Client.SendObj(result);
                                 timer.stop();
@@ -165,7 +165,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                                 setButtonListener(false); 
                             }
                             else{
-                                Client.SendObj('T');
+                                Client.SendObj(-4);
                                 DataType.CaroResult result = new DataType.CaroResult(Client.cUser.UserName, nameDoiThu, NameTour, "WIN");
                                 Client.SendObj(result);
                                 timer.stop();
@@ -205,7 +205,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                         arrSquare[i][j].setValue('x');
                         Winner = StaticCheckWinner.CheckWin(arrSquare, 'x', i, j);
                         try {
-                            Client.SendObj('X');
+                            Client.SendObj(-1);
                             DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu,'X', i, j);
                             Client.SendObj(caro);
                             messageArea.append(Client.cUser.UserName+":"+nameDoiThu+":"+i+","+j);
@@ -218,7 +218,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                         arrSquare[i][j].setValue('o');
                         Winner = StaticCheckWinner.CheckWin(arrSquare, 'o', i, j);
                         try {
-                            Client.SendObj('X');
+                            Client.SendObj(-1);
                             DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu, 'O', i, j);
                             Client.SendObj(caro);
                             messageArea.append(Client.cUser.UserName + ":" + nameDoiThu + ":" + i + "," + j);
@@ -429,7 +429,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         try {
             jlblStatus.setText("Waiting...");
             jBtnOK.setEnabled(false);
-            Client.SendObj('K');
+            Client.SendObj(-2);
             Client.SendMsg(Client.cUser.UserName+":"+nameDoiThu);
         } catch (IOException ex) {
             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);

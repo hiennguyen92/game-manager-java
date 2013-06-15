@@ -32,7 +32,7 @@ public class ManageForm extends javax.swing.JFrame {
     boolean isRun = true; //xác định thread chạy hay ngưng
     static Map<String, Object> listClientCaro; //thông tin caro nhận đc
     static Map<String, Object> listClientStatus; //trạng thái sẵn sàng chơi game
-    static char offset = ' ';
+    static int offset = ' ';
     static Object mPauseLock = new Object();
 
     /**
@@ -45,38 +45,38 @@ public class ManageForm extends javax.swing.JFrame {
             while (isRun) {
                 try {
                     jlblScore.setText("Score: "+Client.cUser.Score);
-                    offset = (char) Client.GetObj();
+                    offset = (int) Client.GetObj();
                     System.out.print(offset);
                     switch (offset) { 
-                        case 'U':
+                        case -5:
                             String[] Info = Client.GetMsg().split(":");
                             Client.cUser.UserName = Info[0];
                             Client.cUser.Score = Integer.parseInt(Info[1]);
                             break;
                         //có 1 người chơi thoát
-                        case '0':
+                        case 0:
                             listUsers.remove(Client.GetMsg());
                             lUserOnline.setListData(listUsers);
                             break;
                         //nhận danh sách người onl
-                        case '1':
+                        case 1:
                             
                             listUsers.add(Client.GetMsg());
                             lUserOnline.setListData(listUsers);
                             //Client.cUser.Score = user.Score;
                             break;
                         //nhận danh sách các giải đấu
-                        case '2':
+                        case 2:
                             listTours = new Vector<>((List<String>) Client.GetObj());
                             lTournament.setListData(listTours);
                             break;
                         //nhận được lời mời
-                        case '3':
+                        case 3:
                             String userName = Client.GetMsg();
                             int result = JOptionPane.showConfirmDialog(ManageForm.this, userName + " invited you for a game",
                                     "Invite", JOptionPane.YES_NO_OPTION);
                             Answer answer = new Answer(userName, result,"");
-                            Client.SendObj('2');
+                            Client.SendObj(2);
                             Client.SendObj(answer);
                             //trả lời yes thì hiện form chơi game
                             if (result == JOptionPane.YES_OPTION) {
@@ -87,7 +87,7 @@ public class ManageForm extends javax.swing.JFrame {
                             }
                             break;
                         //nhận kết quả lời mời
-                        case '4':
+                        case 4:
                             answer = (Answer) Client.GetObj();
                             if (answer.Answer == JOptionPane.YES_OPTION) {
                                 
@@ -102,11 +102,11 @@ public class ManageForm extends javax.swing.JFrame {
                             }
                             break;
                         //nhận lời chat
-                        case '5':
+                        case 5:
                             taChatRoom.append(Client.GetMsg() + "\n");
                             break;
                         //nhận kết quả tham gia giải đấu
-                        case '6':
+                        case 6:
                             String[] msg = Client.GetMsg().split(":");
                             if (msg[0].equals("score")) {
                                 JOptionPane.showMessageDialog(ManageForm.this, " your score's too low",
@@ -119,13 +119,13 @@ public class ManageForm extends javax.swing.JFrame {
                             }
                             break;
                         //thông tin caro
-                        case 'X':
+                        case -1:
                             Caro caro = (Caro) Client.GetObj();
                             listClientCaro.put(caro.NameEnemy, caro);
                             System.out.print(caro.UserName + "," + caro.NameEnemy + "," + caro.i + caro.j);
                             break;
                         //Sẵn Sàng Đánh Caro
-                        case 'K':
+                        case -2:
                             String msgs = Client.GetMsg();
                             listClientStatus.put(msgs, "OK");
                             break;
@@ -373,7 +373,7 @@ public class ManageForm extends javax.swing.JFrame {
         try {
             if(lUserOnline.getSelectedIndex() != -1){
                 String userName = (String) lUserOnline.getSelectedValue();
-                Client.SendObj('1');
+                Client.SendObj(1);
                 Client.SendMsg(userName);
             }
         } catch (Exception ex) {
@@ -386,7 +386,7 @@ public class ManageForm extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             //thông báo tắt client
-            Client.SendObj('0');
+            Client.SendObj(0);
         } catch (IOException ex) {
             Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -395,7 +395,7 @@ public class ManageForm extends javax.swing.JFrame {
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
             // TODO add your handling code here:
-            Client.SendObj('3');
+            Client.SendObj(3);
             Client.SendMsg(taChat.getText());
             taChat.setText("");
         } catch (IOException ex) {
@@ -422,7 +422,7 @@ public class ManageForm extends javax.swing.JFrame {
             // TODO add your handling code here:
             if(lTournament.getSelectedIndex() != -1){
                 String tourName = (String) lTournament.getSelectedValue();
-                Client.SendObj('4');
+                Client.SendObj(4);
                 Client.SendMsg(tourName);
             }
         } catch (IOException ex) {

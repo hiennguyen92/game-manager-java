@@ -43,10 +43,10 @@ public class WaitingForm extends javax.swing.JFrame {
         public void run() {
             while (true) {
                 try {
-                    char offset = ManageForm.offset;
+                    int offset = ManageForm.offset;
                     switch (offset) {
                         //nhận danh sách người chơi
-                        case '7':
+                        case 7:
                             List<String> userNames = (List<String>) Client.GetObj();
                             int nRow = 0;
                             DefaultTableModel model = (DefaultTableModel) tbUsers.getModel();
@@ -66,7 +66,7 @@ public class WaitingForm extends javax.swing.JFrame {
                             }
                             break;
                         //nhận báo hiệu bắt đầu giải đấu và đấu với 1 người chỉ định
-                        case '8':
+                        case 8:
                             String userName = Client.GetMsg();
                             ManageForm.listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                             ManageForm.listClientStatus.put(userName, "NULL");
@@ -183,7 +183,7 @@ public class WaitingForm extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             //gửi báo hiệu thoát giải đấu
-            Client.SendObj('5');
+            Client.SendObj(5);
         } catch (IOException ex) {
             Logger.getLogger(WaitingForm.class.getName()).log(Level.SEVERE, null, ex);
         }

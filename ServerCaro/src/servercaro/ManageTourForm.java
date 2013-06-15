@@ -297,10 +297,10 @@ public class ManageTourForm extends javax.swing.JFrame {
             for (int i = 0; i < Tour.users.size(); i += 2) {
                 try {
                     Client client = Server.getClient(Tour.users.get(i + 1).UserName);
-                    client.SendObj('8');
+                    client.SendObj(8);
                     client.SendMsg(Tour.users.get(i).UserName);
                     client = Server.getClient(Tour.users.get(i).UserName);
-                    client.SendObj('4');
+                    client.SendObj(4);
                     Answer answer = new Answer(Tour.users.get(i + 1).UserName, JOptionPane.YES_OPTION,Tour.name);
                     client.SendObj(answer);
                 } catch (IOException ex) {
@@ -317,7 +317,7 @@ public class ManageTourForm extends javax.swing.JFrame {
         if (jcomboGiaiDau.getSelectedIndex() != -1) {
             for (int i = 0; i < Server.cSockets.size(); i++) {
                 try {
-                    Server.cSockets.get(i).SendObj('2');
+                    Server.cSockets.get(i).SendObj(2);
                     Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
                 } catch (IOException ex) {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
