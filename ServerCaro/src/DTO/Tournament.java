@@ -22,10 +22,12 @@ public class Tournament {
     public int mPoint; //điểm thấp nhất dc tham gia
     public boolean isStart; //trạng thái đã bắt đầu hay chưa
     public List<User> users;
+    public List<String> nameUser;
     public Map<String,Integer> TourScore;
 
     public Tournament() {
         users = new ArrayList<>();
+        nameUser = new ArrayList<>();
         TourScore = new HashMap<>();
         isStart = false;
     }

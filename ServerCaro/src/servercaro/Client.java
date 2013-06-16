@@ -67,7 +67,6 @@ public class Client extends Thread {
                 int offset = (int) GetObj();
                 switch (offset) {
                     //nhận thông báo tắt
-                    
                     case 0:
                         for (int i = 0; i < Server.cSockets.size(); i++) {
                             if (!Server.cSockets.get(i).cUser.UserName.equals(cUser.UserName)) {
@@ -128,6 +127,7 @@ public class Client extends Thread {
                             tour.users.add(cUser);
                             SendMsg("success:"+tour.name);
                             tour.TourScore.put(cUser.UserName, 0);
+                            tour.nameUser.add(cUser.UserName);
                             for (int i = 0; i < tour.users.size(); i++) {
                                 client = Server.getClient(tour.users.get(i).UserName);
                                 client.SendObj(7);

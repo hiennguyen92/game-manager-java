@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -127,14 +126,14 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             timer.start();
                             jlblStatus.setText("Playing...");
                             if(caro.Type == 'X'){
-                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
+                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(getClass().getResource("x.png")));
                                 arrSquare[caro.i][caro.j].setValue('x');
                                 setButtonListener(true);
                                 ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
                                 EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'x', caro.i, caro.j);
                             }
                             else{
-                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
+                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(getClass().getResource("o.png")));
                                 arrSquare[caro.i][caro.j].setValue('o');
                                 setButtonListener(true);
                                 ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
@@ -183,7 +182,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    Thread.sleep(500); 
+                    Thread.sleep(100); 
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(PlayGameForm.this, ex.getMessage(),
@@ -207,7 +206,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                 if(e.getSource() == arrSquare[i][j]){
                     setButtonListener(false);
                     if(PlayerType == 'x'){
-                        arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
+                        arrSquare[i][j].setIcon(new ImageIcon(getClass().getResource("x.png")));
                         arrSquare[i][j].setValue('x');
                         Winner = StaticCheckWinner.CheckWin(arrSquare, 'x', i, j);
                         try {
@@ -220,7 +219,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                         }
                     }
                     else{
-                        arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
+                        arrSquare[i][j].setIcon(new ImageIcon(getClass().getResource("o.png")));
                         arrSquare[i][j].setValue('o');
                         Winner = StaticCheckWinner.CheckWin(arrSquare, 'o', i, j);
                         try {
