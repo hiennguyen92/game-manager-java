@@ -26,7 +26,7 @@ public class Client {
     }
     
     //gửi thông tin kiểu string
-    public static void SendMsg(String msg) throws IOException{
+    public synchronized static void SendMsg(String msg) throws IOException{
         DataOutputStream out = new DataOutputStream(cSocket.getOutputStream());;
         out.writeUTF(msg);
     }
@@ -38,7 +38,7 @@ public class Client {
     }
     
     //gửi thông tin kiểu object (mọi kiểu)
-    public static void SendObj(Object obj) throws IOException{
+    public synchronized static void SendObj(Object obj) throws IOException{
         ObjectOutputStream out = new ObjectOutputStream(cSocket.getOutputStream());;
         out.writeObject(obj);
     }

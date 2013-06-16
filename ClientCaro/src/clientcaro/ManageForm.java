@@ -32,6 +32,7 @@ public class ManageForm extends javax.swing.JFrame {
     boolean isRun = true; //xác định thread chạy hay ngưng
     static Map<String, Object> listClientCaro; //thông tin caro nhận đc
     static Map<String, Object> listClientStatus; //trạng thái sẵn sàng chơi game
+    static Map<String, Object> listChatPrivate; //thông tin chat private
     static int offset = ' ';
     static Object mPauseLock = new Object();
 
@@ -39,7 +40,7 @@ public class ManageForm extends javax.swing.JFrame {
      * Creates new form ManageForm
      */
     public ManageForm() {
-        this.listen = new Runnable() {
+        this.listen =  new  Runnable() {
         @Override
         public void run() {
             while (isRun) {
@@ -82,6 +83,7 @@ public class ManageForm extends javax.swing.JFrame {
                             if (result == JOptionPane.YES_OPTION) {
                                 listClientCaro.put(userName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(userName, "NULL");
+                                listChatPrivate.put(userName, new ChatPrivate(null, null, null));
                                 new PlayGameForm(userName, false,"").setVisible(true);
                                 //ManageForm.this.dispose();
                             }
@@ -93,8 +95,8 @@ public class ManageForm extends javax.swing.JFrame {
                                 
                                 listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
                                 listClientStatus.put(answer.UserName, "NULL");
+                                listChatPrivate.put(answer.UserName, new ChatPrivate(null, null, null));
                                 new PlayGameForm(answer.UserName, true,answer.NameTour).setVisible(true);
-                                
                                 //ManageForm.this.dispose();
                             } else {
                                 JOptionPane.showMessageDialog(ManageForm.this, answer.UserName + " rejected your invitation",
@@ -129,8 +131,12 @@ public class ManageForm extends javax.swing.JFrame {
                             String msgs = Client.GetMsg();
                             listClientStatus.put(msgs, "OK");
                             break;
+                            //chat private
+                        case 200:
+                            ChatPrivate chat = (ChatPrivate)Client.GetObj();
+                            listChatPrivate.put(chat.NameEnemy, chat);
+                            break;
                         default:
-                            
                             WaitingForm.resume();
                             synchronized (mPauseLock) {
                                 mPauseLock.wait();
@@ -153,8 +159,9 @@ public class ManageForm extends javax.swing.JFrame {
         listTours = new Vector<>();
         listClientCaro = new HashMap<>();
         listClientStatus = new HashMap<>();
+        listChatPrivate = new HashMap<>();
         Thread listener = new Thread(listen);
-        listener.start();
+         listener.start();
     }
 
     private void ShowAvatar() {

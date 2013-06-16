@@ -346,8 +346,8 @@ public class ManageTourForm extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Tournament tour = Server.getTour((String)jcomboGiaiDau.getSelectedItem());
-        for (int i = 0; i < tour.level.size(); i++) {
-            System.out.println(tour.level.get(Server.allUsers.get(i).UserName));
+        for (int i = 0; i < tour.TourScore.size(); i++) {
+            System.out.println(tour.TourScore.get(Server.allUsers.get(i).UserName));
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -54,9 +54,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             }
         }
     });
-    
 
-    public PlayGameForm(String UserDoiThu,boolean isInviter,String nameTour) {
+    public  PlayGameForm(String UserDoiThu,boolean isInviter,String nameTour) {
 
         initComponents();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -93,7 +92,6 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         listener.start();
     }
 
-    int result = JOptionPane.NO_OPTION;
     
     Runnable listen = new Runnable(){
         @Override
@@ -144,7 +142,14 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             }
                         } 
                     }
-                    Thread.sleep(100); 
+                    if(ManageForm.listChatPrivate.size()>0){
+                        DataType.ChatPrivate chat = (DataType.ChatPrivate)ManageForm.listChatPrivate.get(nameDoiThu);
+                        if(chat.NameEnemy != null){
+                            messageArea.append(chat.Chat);
+                            ManageForm.listChatPrivate.put(nameDoiThu, new DataType.ChatPrivate(null, null, null));
+                        }
+                    }
+                    
                     if (EnemyWinner) {
                         timer.stop();
                         EnemyWinner = false;
@@ -178,6 +183,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
+                    Thread.sleep(500); 
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(PlayGameForm.this, ex.getMessage(),
@@ -192,10 +198,9 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        
+    public synchronized void actionPerformed(ActionEvent e) {
         if (e.getSource() == chatField) {
-            String chat = chatField.getText();
+            btnSend.doClick();
         }
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
@@ -209,7 +214,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Client.SendObj(-1);
                             DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu,'X', i, j);
                             Client.SendObj(caro);
-                            messageArea.append(Client.cUser.UserName+":"+nameDoiThu+":"+i+","+j);
+                            //messageArea.append(Client.cUser.UserName+":"+nameDoiThu+":"+i+","+j);
                         } catch (IOException ex) {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -222,7 +227,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Client.SendObj(-1);
                             DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu, 'O', i, j);
                             Client.SendObj(caro);
-                            messageArea.append(Client.cUser.UserName + ":" + nameDoiThu + ":" + i + "," + j);
+                            
                         } catch (IOException ex) {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }             
@@ -235,8 +240,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         }  
     }
     
-    
-    
+
     public void setButtonListener(boolean isListener) {
         if (isListener) {
             for (int i = 0; i < Rows; i++) {
@@ -296,11 +300,9 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Message"));
 
-        messageArea.setEditable(false);
         messageArea.setColumns(20);
         messageArea.setLineWrap(true);
         messageArea.setRows(5);
-        messageArea.setPreferredSize(new java.awt.Dimension(165, 94));
         jScrollPane1.setViewportView(messageArea);
 
         jPGame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -318,6 +320,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         );
 
         btnSend.setText("SEND");
+        btnSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendActionPerformed(evt);
+            }
+        });
 
         lblTime.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         lblTime.setText("- -");
@@ -441,6 +448,22 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jbtnCloseActionPerformed
+
+    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+        // TODO add your handling code here:
+        if (!chatField.getText().equals("")) {
+            try {
+                messageArea.append(Client.cUser.UserName+": "+chatField.getText()+"\n");
+                DataType.ChatPrivate chat = new DataType.ChatPrivate(Client.cUser.UserName, nameDoiThu, Client.cUser.UserName+": "+chatField.getText()+"\n");
+                Client.SendObj(200);
+                Client.SendObj(chat);
+                chatField.setText("");
+                System.out.println("\n"+200 + chat.UserName +chat.NameEnemy + chat.Chat);
+            } catch (IOException ex) {
+                Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnSendActionPerformed
 
     /**
      * @param args the command line arguments
