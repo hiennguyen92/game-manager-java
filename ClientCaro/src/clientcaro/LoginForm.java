@@ -123,6 +123,7 @@ public class LoginForm extends javax.swing.JFrame {
         try {
             Client.Init(1234);
 
+            Client.SendMsg("login");
             Client.SendMsg(userName);
             Client.SendMsg(password);
             //thành công thì hiện form manage ra

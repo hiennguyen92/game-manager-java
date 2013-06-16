@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -26,6 +27,8 @@ public class Client extends Thread {
     public Socket cSocket;
     public User cUser;
     public boolean isRunning = true;
+    //có đang rãnh hay ko 
+    public boolean isPlaying = false;
 
     public Client(Socket socket, User user) {
         cSocket = socket;
@@ -68,13 +71,12 @@ public class Client extends Thread {
                 switch (offset) {
                     //nhận thông báo tắt
                     case 0:
-                        for (int i = 0; i < Server.cSockets.size(); i++) {
-                            if (!Server.cSockets.get(i).cUser.UserName.equals(cUser.UserName)) {
-                                Server.cSockets.get(i).SendObj(0);
-                                Server.cSockets.get(i).SendMsg(cUser.UserName);
-                            }
-                        }
                         Server.cSockets.remove(this);
+                        for (int i = 0; i < Server.cSockets.size(); i++) {
+                            Server.cSockets.get(i).SendObj(1);
+                            List<String> msg = Server.getAllUsersStatus(Server.cSockets.get(i));
+                            Server.cSockets.get(i).SendObj(msg);
+                        }
                         this.isRunning = false;
                         break;
                     //nhận lời mời
@@ -93,6 +95,15 @@ public class Client extends Thread {
                         client.SendObj(4);
                         answer.UserName = cUser.UserName;
                         client.SendObj(answer);
+                        if(answer.Answer == JOptionPane.YES_OPTION){
+                            isPlaying = true;
+                            client.isPlaying = true;
+                            for (int i = 0; i < Server.cSockets.size(); i++) {
+                                Server.cSockets.get(i).SendObj(1);
+                                List<String> list = Server.getAllUsersStatus(Server.cSockets.get(i));
+                                Server.cSockets.get(i).SendObj(list);
+                            }
+                        }
                         break;
                     //nhận cập nhật khung chat
                     case 3:
@@ -186,8 +197,15 @@ public class Client extends Thread {
                         CaroResult KQTemp = (CaroResult) GetObj();
                         System.out.println(KQTemp.UserName + "--" + KQTemp.NameEnemy + "--" + KQTemp.Result);
                         Client clientWin = Server.getClient(KQTemp.UserName);
-                        //Client clientLose = Server.getClient(KQ.NameEnemy);
+                        Client clientLose = Server.getClient(KQTemp.NameEnemy);
                         clientWin.cUser.setScore(clientWin.cUser.getScore() + 1);
+                        isPlaying = false;
+                        clientLose.isPlaying = false;
+                        for (int i = 0; i < Server.cSockets.size(); i++) {
+                            Server.cSockets.get(i).SendObj(1);
+                            List<String> list = Server.getAllUsersStatus(Server.cSockets.get(i));
+                            Server.cSockets.get(i).SendObj(list);
+                        }
                         break;
                     //Kết quả giải đấu
                     case -4:
@@ -206,7 +224,6 @@ public class Client extends Thread {
                             cUser.Score += Tour.prize;
                             SendObj(10);
                             SendMsg(String.valueOf(Tour.prize));
-                            SendMsg(String.valueOf(Tour.TourScore.get(cUser.UserName)));
                         }
                         //các cặp khác xong hết thì bắt đầu chia cặp đánh tiếp
                         else if(Tour.users.size() == Tour.nPlayer){
@@ -216,6 +233,7 @@ public class Client extends Thread {
                                 client.SendObj(8);
                                 answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION, Tour.name, false);
                                 client.SendObj(answer);
+                                Thread.sleep(300);
                                 client = Server.getClient(Tour.users.get(i+1).UserName);
                                 client.SendObj(8);
                                 answer = new Answer(Tour.users.get(i).UserName, JOptionPane.YES_OPTION, Tour.name, true);

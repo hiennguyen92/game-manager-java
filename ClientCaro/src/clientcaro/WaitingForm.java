@@ -88,11 +88,17 @@ public class WaitingForm extends javax.swing.JFrame {
                         //nhận báo hiệu thằng giải đấu
                         case 10:
                             String msg = Client.GetMsg();
-                            String nWin = Client.GetMsg();
-                            JOptionPane.showMessageDialog(null, "You are the champion of the tournament " + TourName + "\nScore you gained: " + msg +"\nRound win: "+nWin, "Champion", JOptionPane.OK_OPTION);
+                            new WinForm(TourName, msg).setVisible(true);
                             
                             WaitingForm.this.setVisible(false);
+                            ManageForm.resume();
+                            isRun = false;
                             break;
+                        default:
+                            ManageForm.resume();
+                            synchronized (mPauseLock) {
+                                mPauseLock.wait();
+                            }
 
                     }
 

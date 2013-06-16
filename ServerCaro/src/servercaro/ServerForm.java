@@ -5,6 +5,7 @@
 package servercaro;
 
 import DAO.UserDAO;
+import DTO.User;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -13,6 +14,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +42,8 @@ public class ServerForm extends javax.swing.JFrame {
             Logger.getLogger(ServerForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-     public static void centreWindow(Window frame) {
+
+    public static void centreWindow(Window frame) {
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 3.4);
         int y = (int) ((dimension.getHeight() - frame.getHeight()) / 3.3);
@@ -56,38 +59,49 @@ public class ServerForm extends javax.swing.JFrame {
                     taStatus.setText(strNotify);
                     //lấy thông tin người đăng nhập
                     DataInputStream in = new DataInputStream(client.getInputStream());
+                    String state = in.readUTF();
                     String userName = in.readUTF();
-                    in = new DataInputStream(client.getInputStream());
                     String password = in.readUTF();
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                    int idx = Server.getIndex(userName, password);
-                    if (idx != -1) {
-                        Client exist = Server.getClient(userName);
-                        if (exist == null) {
-                            Server.cSockets.add(new Client(client, Server.allUsers.get(idx)));
-                            Server.cSockets.get(Server.cSockets.size() - 1).start();
-                            out.writeUTF("success");
-                            for (int i = 0; i < Server.cSockets.size() - 1; i++) {
-                                //gửi thông tin người mới đăng nhập vào các người đã đăng nhập
-                                Server.cSockets.get(i).SendObj(1);
-                                Server.cSockets.get(i).SendMsg(userName);
-                                //gửi thông tin những người đã đăng nhấp đến người mới đăng nhập
-                                Server.cSockets.get(Server.cSockets.size() - 1).SendObj(1);
-                                Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(Server.cSockets.get(i).getUserName());
+                    if (state.equals("login")) {
+                        int idx = Server.getIndex(userName, password);
+                        if (idx != -1) {
+                            Client exist = Server.getClient(userName);
+                            if (exist == null) {
+                                Server.cSockets.add(new Client(client, Server.allUsers.get(idx)));
+                                Server.cSockets.get(Server.cSockets.size() - 1).start();
+                                out.writeUTF("success");
+                                for (int i = 0; i < Server.cSockets.size(); i++) {
+                                    //gửi thông tin danh sách người đã đăng nhập
+                                    Server.cSockets.get(i).SendObj(1);
+                                    List<String> msg = Server.getAllUsersStatus(Server.cSockets.get(i));
+                                    Server.cSockets.get(i).SendObj(msg);
+                                }
+
+
+                                Server.cSockets.get(Server.cSockets.size() - 1).SendObj(-5);
+                                Server.cSockets.get(Server.cSockets.size() - 1).SendMsg(Server.cSockets.get(Server.cSockets.size() - 1).cUser.UserName + ":" + Server.cSockets.get(Server.cSockets.size() - 1).cUser.Score);
+                                List<String> msg = Server.getAllToursStatus();
+                                Server.cSockets.get(Server.cSockets.size() - 1).SendObj(2);
+                                Server.cSockets.get(Server.cSockets.size() - 1).SendObj(msg);
+
+                            } else {
+                                out.writeUTF("fail");
                             }
-
-            
-                            Server.cSockets.get(Server.cSockets.size()-1).SendObj(-5);
-                            Server.cSockets.get(Server.cSockets.size()-1).SendMsg(Server.cSockets.get(Server.cSockets.size() - 1).cUser.UserName+":"+Server.cSockets.get(Server.cSockets.size() - 1).cUser.Score);
-                            List<String> msg = Server.getAllToursStatus();
-                            Server.cSockets.get(Server.cSockets.size() - 1).SendObj(2);
-                            Server.cSockets.get(Server.cSockets.size() - 1).SendObj(msg);
-
                         } else {
                             out.writeUTF("fail");
                         }
                     } else {
-                        out.writeUTF("fail");
+                        User user = Server.getUser(userName);
+                        if (user == null) {
+                            user = new User(userName, password, 0);
+                            if(UserDAO.Add(user))
+                                out.writeUTF("success");
+                            else
+                                out.writeUTF("fail");
+                        }
+                        else
+                            out.writeUTF("fail");
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(ServerForm.class.getName()).log(Level.SEVERE, null, ex);

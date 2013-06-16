@@ -311,25 +311,18 @@ public class ManageTourForm extends javax.swing.JFrame {
             Tour.nPlayer = Tour.nPlayer / 2;
             jcomboGiaiDau.removeItem(Tour.name);
             Tour.isStart = true;
-            for (int i = 0; i < Server.cSockets.size(); i++) {
-                try {
-                    Server.cSockets.get(i).SendObj(2);
-                    Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
-                } catch (IOException ex) {
-                    Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
             for (int i = 0; i < Tour.users.size(); i += 2) {
                 try {
                     Client client = Server.getClient(Tour.users.get(i).UserName);
                     client.SendObj(8);
                     Answer answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION, Tour.name, false);
                     client.SendObj(answer);
+                    Thread.sleep(300);
                     client = Server.getClient(Tour.users.get(i + 1).UserName);
                     client.SendObj(8);
                     answer = new Answer(Tour.users.get(i).UserName, JOptionPane.YES_OPTION, Tour.name, true);
                     client.SendObj(answer);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

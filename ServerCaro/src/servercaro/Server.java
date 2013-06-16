@@ -55,6 +55,17 @@ public class Server {
         }
         return null;
     }
+    
+    //lấy tất cả tên người dùng đang rãnh
+    public static List<String> getAllUsersStatus(Client client){
+        List<String> statuses = new ArrayList<>();
+        for (int i = 0; i < cSockets.size(); i++) {
+            if (!cSockets.get(i).isPlaying && !cSockets.get(i).equals(client)) {
+                statuses.add(cSockets.get(i).cUser.UserName);
+            }
+        }
+        return statuses;
+    }
 
     //lấy thông tin 1 tour
     public static Tournament getTour(String name) {

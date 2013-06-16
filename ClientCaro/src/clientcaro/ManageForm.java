@@ -49,17 +49,10 @@ public class ManageForm extends javax.swing.JFrame {
                             Client.cUser.UserName = Info[0];
                             Client.cUser.Score = Integer.parseInt(Info[1]);
                             break;
-                        //có 1 người chơi thoát
-                        case 0:
-                            listUsers.remove(Client.GetMsg());
-                            lUserOnline.setListData(listUsers);
-                            break;
                         //nhận danh sách người onl
                         case 1:
-                            
-                            listUsers.add(Client.GetMsg());
-                            lUserOnline.setListData(listUsers);
-                            
+                            listUsers = new Vector<>((List<String>) Client.GetObj());
+                            lUserOnline.setListData(listUsers);                            
                             break;
                         //nhận danh sách các giải đấu
                         case 2:
@@ -131,8 +124,7 @@ public class ManageForm extends javax.swing.JFrame {
                             ChatPrivate chat = (ChatPrivate)Client.GetObj();
                             listChatPrivate.put(chat.NameEnemy, chat);
                             break;
-                        default:
-                            
+                        default:                            
                             WaitingForm.resume();
                             synchronized (mPauseLock) {
                                 mPauseLock.wait();

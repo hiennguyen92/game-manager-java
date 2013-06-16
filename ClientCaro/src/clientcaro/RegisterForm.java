@@ -140,13 +140,15 @@ public class RegisterForm extends javax.swing.JFrame {
                     "Error", JOptionPane.WARNING_MESSAGE);
         else{
             try { //có trong database thì báo lỗi
+                Client.Init(1234);
+                Client.SendMsg("register");
                 Client.SendMsg(userName);
+                Client.SendMsg(password);
                 String isExit = Client.GetMsg();
-                if(isExit.equals("true"))
+                if(isExit.equals("fail"))
                     JOptionPane.showMessageDialog(this, "User name is already existed",
                     "Error", JOptionPane.WARNING_MESSAGE);
                 else{
-                    Client.SendMsg(password);
                     JOptionPane.showMessageDialog(this, "Account created");
                     tbUserName.setText("");
                     tbPassword.setText("");

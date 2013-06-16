@@ -5,7 +5,7 @@
 package Data;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.sql.Date;
 
 /**
  *
@@ -15,17 +15,17 @@ public class User implements Serializable{
     public String UserName;
     public String Password;
     public int Score;
-    public Timestamp LastVisit;
+    public Date LastVisit;
 
-    public Timestamp getLastlogin() {
+    public Date getLastlogin() {
         return LastVisit;
     }
 
-    public void setLastlogin(Timestamp lastlogin) {
+    public void setLastlogin(Date lastlogin) {
         this.LastVisit = lastlogin;
     }
     
-    public User(String userName, String password, int score, Timestamp lastVisit){
+    public User(String userName, String password, int score, Date lastVisit){
         UserName = userName;
         Password = password;
         Score = score;

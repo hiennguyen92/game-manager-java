@@ -13,16 +13,7 @@ import DAO.UserDAO;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -71,7 +62,7 @@ public class UserInfo extends javax.swing.JFrame {
             String username = a.getUserName();
             String pass = a.getPassword();
             int Score = a.getScore();
-            Timestamp visit = a.getLastlogin();
+            Date visit = a.getLastlogin();
             String temp = visit.toString();
             int j = 1;
 
@@ -226,14 +217,9 @@ public class UserInfo extends javax.swing.JFrame {
 
         String user = jtxtUser.getText();
         String pass = jtxtPass.getText();
-        String score = jtxtScore.getText();
-        int score_ = Integer.parseInt(score);
-
-        java.util.Date date = new Date();
-        Object param = new java.sql.Timestamp(date.getTime());
-
-
-        User us = new User(user, pass, score_, (Timestamp) param);
+        int score = Integer.parseInt(jtxtScore.getText());
+        
+        User us = new User(user, pass, score);
 
         boolean result = UserDAO.Add(us);
 
@@ -266,7 +252,7 @@ public class UserInfo extends javax.swing.JFrame {
         String pass = jtxtPass.getText();
         int score = Integer.parseInt(jtxtScore.getText());
         String date = jtxtVisit.getText();
-        Timestamp ts = Timestamp.valueOf(date);
+        Date ts = Date.valueOf(date);
         User us = new User(user, pass, score, ts);
         boolean result = UserDAO.Update(us);
         if (result) {
