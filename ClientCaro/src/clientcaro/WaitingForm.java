@@ -74,6 +74,7 @@ public class WaitingForm extends javax.swing.JFrame {
                             DataType.Answer answer = (DataType.Answer) Client.GetObj();
                             ManageForm.listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
                             ManageForm.listClientStatus.put(answer.UserName, "NULL");
+                            ManageForm.listChatPrivate.put(answer.UserName, new DataType.ChatPrivate(null, null, null));
                             new PlayGameForm(answer.UserName, answer.IsSecond, answer.NameTour).setVisible(true);
                             WaitingForm.this.setVisible(false);
                             isRun = false;

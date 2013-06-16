@@ -318,7 +318,6 @@ public class ManageTourForm extends javax.swing.JFrame {
                     client.SendObj(8);
                     Answer answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION, Tour.name, false);
                     client.SendObj(answer);
-                    Thread.sleep(300);
                     client = Server.getClient(Tour.users.get(i + 1).UserName);
                     client.SendObj(8);
                     answer = new Answer(Tour.users.get(i).UserName, JOptionPane.YES_OPTION, Tour.name, true);
