@@ -193,6 +193,8 @@ public class Client extends Thread {
                     case -4:
                         CaroResult KQ = (CaroResult)GetObj();
                         Tournament Tour = Server.getTour(KQ.NameTour);
+                        int score = Tour.TourScore.get(KQ.UserName) + 1;
+                        Tour.TourScore.put(KQ.UserName, score);
                         Tour.users.add(cUser);
                         for (int i = 0; i < Tour.users.size(); i++) {
                             client = Server.getClient(Tour.users.get(i).UserName);
@@ -204,6 +206,7 @@ public class Client extends Thread {
                             cUser.Score += Tour.prize;
                             SendObj(10);
                             SendMsg(String.valueOf(Tour.prize));
+                            SendMsg(String.valueOf(Tour.TourScore.get(cUser.UserName)));
                         }
                         //các cặp khác xong hết thì bắt đầu chia cặp đánh tiếp
                         else if(Tour.users.size() == Tour.nPlayer){

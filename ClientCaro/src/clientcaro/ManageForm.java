@@ -6,6 +6,7 @@ package clientcaro;
 
 import Data.DataType.*;
 import Data.User;
+import java.awt.Graphics;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -45,10 +46,8 @@ public class ManageForm extends javax.swing.JFrame {
         public void run() {
             while (isRun) {
                 try {
-                    jlblScore.setText("Score: "+Client.cUser.Score);
                     offset = (int) Client.GetObj();
-                    System.out.print(offset);
-                    switch (offset) { 
+                    switch (offset) {
                         case -5:
                             String[] Info = Client.GetMsg().split(":");
                             Client.cUser.UserName = Info[0];
@@ -64,7 +63,7 @@ public class ManageForm extends javax.swing.JFrame {
                             
                             listUsers.add(Client.GetMsg());
                             lUserOnline.setListData(listUsers);
-                            //Client.cUser.Score = user.Score;
+                            
                             break;
                         //nhận danh sách các giải đấu
                         case 2:
@@ -137,6 +136,7 @@ public class ManageForm extends javax.swing.JFrame {
                             listChatPrivate.put(chat.NameEnemy, chat);
                             break;
                         default:
+                            
                             WaitingForm.resume();
                             synchronized (mPauseLock) {
                                 mPauseLock.wait();
@@ -161,8 +161,27 @@ public class ManageForm extends javax.swing.JFrame {
         listClientStatus = new HashMap<>();
         listChatPrivate = new HashMap<>();
         Thread listener = new Thread(listen);
-         listener.start();
+        listener.start();
+         
+        Thread updateGraphics = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        jlblScore.setText("Score: " + Client.cUser.Score);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+            }
+        });
+        updateGraphics.start();
     }
+    
+    
+    
 
     private void ShowAvatar() {
         Icon ii = new ImageIcon(getClass().getResource("images.jpg"));
@@ -193,8 +212,6 @@ public class ManageForm extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         lTournament = new javax.swing.JList();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        taChat = new javax.swing.JTextArea();
         btnSend = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -202,6 +219,7 @@ public class ManageForm extends javax.swing.JFrame {
         jLabelImage = new javax.swing.JLabel();
         btnBrowseImage = new javax.swing.JButton();
         jlblScore = new javax.swing.JLabel();
+        taChat = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -264,10 +282,6 @@ public class ManageForm extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        taChat.setColumns(20);
-        taChat.setRows(5);
-        jScrollPane4.setViewportView(taChat);
-
         btnSend.setForeground(new java.awt.Color(0, 204, 255));
         btnSend.setText("Send");
         btnSend.addActionListener(new java.awt.event.ActionListener() {
@@ -306,7 +320,13 @@ public class ManageForm extends javax.swing.JFrame {
             }
         });
 
-        jlblScore.setText("jLabel1");
+        jlblScore.setText("Score:");
+
+        taChat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                taChatActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -320,7 +340,7 @@ public class ManageForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(taChat))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
@@ -366,9 +386,9 @@ public class ManageForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                    .addComponent(taChat))
                 .addContainerGap(52, Short.MAX_VALUE))
         );
 
@@ -402,9 +422,11 @@ public class ManageForm extends javax.swing.JFrame {
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         try {
             // TODO add your handling code here:
-            Client.SendObj(3);
-            Client.SendMsg(taChat.getText());
-            taChat.setText("");
+            if (!taChat.getText().equals("")) {
+                Client.SendObj(3);
+                Client.SendMsg(taChat.getText());
+                taChat.setText("");
+            }
         } catch (IOException ex) {
             Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -436,6 +458,13 @@ public class ManageForm extends javax.swing.JFrame {
             Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnJoinTourActionPerformed
+
+    private void taChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_taChatActionPerformed
+        // TODO add your handling code here:
+        if(evt.getSource() == taChat){
+            btnSend.doClick();
+        }
+    }//GEN-LAST:event_taChatActionPerformed
 
     /**
      * @param args the command line arguments
@@ -483,11 +512,10 @@ public class ManageForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel jlblScore;
     private javax.swing.JList lTournament;
     private javax.swing.JList lUserOnline;
-    private javax.swing.JTextArea taChat;
+    private javax.swing.JTextField taChat;
     private javax.swing.JTextArea taChatRoom;
     // End of variables declaration//GEN-END:variables
 }

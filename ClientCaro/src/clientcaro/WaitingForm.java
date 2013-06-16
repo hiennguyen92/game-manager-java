@@ -79,7 +79,8 @@ public class WaitingForm extends javax.swing.JFrame {
                             break;
                         case 10:
                             String msg = Client.GetMsg();
-                            JOptionPane.showMessageDialog(null, "You are the champion of the tournament " + TourName + "Score you gained: " + msg, "Champion", JOptionPane.OK_OPTION);
+                            String nWin = Client.GetMsg();
+                            JOptionPane.showMessageDialog(null, "You are the champion of the tournament " + TourName + "\nScore you gained: " + msg +"\nRound win: "+nWin, "Champion", JOptionPane.OK_OPTION);
                             
                             WaitingForm.this.setVisible(false);
                             break;
