@@ -23,6 +23,7 @@ public class WaitingForm extends javax.swing.JFrame {
     public static Object mPauseLock = new Object();
     public String TourName;
     public boolean isRun = true;
+
     /**
      * Creates new form WaitingForm
      */
@@ -32,7 +33,8 @@ public class WaitingForm extends javax.swing.JFrame {
         Thread listener = new Thread(listen);
         listener.start();
     }
-    public WaitingForm(String tourName){
+
+    public WaitingForm(String tourName) {
         initComponents();
         this.setTitle(Client.cUser.UserName);
         TourName = tourName;
@@ -69,7 +71,7 @@ public class WaitingForm extends javax.swing.JFrame {
                             break;
                         //nhận báo hiệu bắt đầu giải đấu và đấu với 1 người chỉ định
                         case 8:
-                            DataType.Answer answer = (DataType.Answer)Client.GetObj();
+                            DataType.Answer answer = (DataType.Answer) Client.GetObj();
                             ManageForm.listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
                             ManageForm.listClientStatus.put(answer.UserName, "NULL");
                             new PlayGameForm(answer.UserName, answer.IsSecond, answer.NameTour).setVisible(true);
@@ -77,10 +79,17 @@ public class WaitingForm extends javax.swing.JFrame {
                             isRun = false;
                             ManageForm.resume();
                             break;
+                        //nhận báo hiệu xóa giải đấu
+                        case 9:
+                            isRun = false;
+                            ManageForm.resume();
+                            WaitingForm.this.setVisible(false);
+                            break;
+                        //nhận báo hiệu thằng giải đấu
                         case 10:
                             String msg = Client.GetMsg();
-                            JOptionPane.showMessageDialog(null, "You are the champion of the tournament " + TourName + "Score you gained: " + msg, "Champion", JOptionPane.OK_OPTION);
-                            
+                            JOptionPane.showMessageDialog(WaitingForm.this, "You are the champion of the tournament " + TourName + "Score you gained: " + msg, "Champion", JOptionPane.OK_OPTION);
+
                             WaitingForm.this.setVisible(false);
                             break;
 

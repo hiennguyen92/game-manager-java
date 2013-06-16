@@ -204,7 +204,7 @@ public class Client extends Thread {
                                 client.SendObj(8);
                                 answer = new Answer(Tour.users.get(i+1).UserName, JOptionPane.YES_OPTION, Tour.name, false);
                                 client.SendObj(answer);
-                                client = Server.getClient(Tour.users.get(i + 1).UserName);
+                                client = Server.getClient(Tour.users.get(i+1).UserName);
                                 client.SendObj(8);
                                 answer = new Answer(Tour.users.get(i).UserName, JOptionPane.YES_OPTION, Tour.name, true);
                                 client.SendObj(answer);                               

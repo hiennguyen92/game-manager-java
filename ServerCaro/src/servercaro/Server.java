@@ -70,21 +70,24 @@ public class Server {
     public static List<String> getAllToursStatus() {
         List<String> statuses = new ArrayList<>();
         for (int i = 0; i < tournaments.size(); i++) {
-            Tournament tour = tournaments.get(i);
-            String msg = "";
-            msg += tour.name + " (";
-            msg += tour.users.size() + "\\";
-            msg += tour.nPlayer + ")";
-            statuses.add(msg);
+            if (!tournaments.get(i).isStart) {
+                Tournament tour = tournaments.get(i);
+                String msg = "";
+                msg += tour.name + " (";
+                msg += tour.users.size() + "\\";
+                msg += tour.nPlayer + ")";
+                statuses.add(msg);
+            }
         }
         return statuses;
     }
-    
+
     //lấy 1 tour có user tên nào đó
-    public static Tournament getTourHasUser(User user){
-        for(int i = 0; i < tournaments.size(); i++){
-            if(tournaments.get(i).isExistUser(user.UserName))
+    public static Tournament getTourHasUser(User user) {
+        for (int i = 0; i < tournaments.size(); i++) {
+            if (tournaments.get(i).isExistUser(user.UserName)) {
                 return tournaments.get(i);
+            }
         }
         return null;
     }

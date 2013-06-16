@@ -160,6 +160,7 @@ public class ServerForm extends javax.swing.JFrame {
 
         btnUserInfo.setForeground(new java.awt.Color(0, 204, 255));
         btnUserInfo.setText("User's Info");
+        btnUserInfo.setEnabled(false);
         btnUserInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUserInfoActionPerformed(evt);
@@ -222,6 +223,7 @@ public class ServerForm extends javax.swing.JFrame {
             btnStart.setEnabled(false);
             btnStop.setEnabled(true);
             btnTour.setEnabled(true);
+            btnUserInfo.setEnabled(true);
         }
     }//GEN-LAST:event_btnStartActionPerformed
 
@@ -236,6 +238,7 @@ public class ServerForm extends javax.swing.JFrame {
         btnStart.setEnabled(true);
         btnStop.setEnabled(false);
         btnTour.setEnabled(false);
+        btnUserInfo.setEnabled(false);
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnTourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTourActionPerformed

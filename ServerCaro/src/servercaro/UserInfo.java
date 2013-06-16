@@ -45,7 +45,8 @@ public class UserInfo extends javax.swing.JFrame {
         ListAllUser();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-     public static void centreWindow(Window frame) {
+
+    public static void centreWindow(Window frame) {
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - frame.getWidth()) / 3.4);
         int y = (int) ((dimension.getHeight() - frame.getHeight()) / 3.3);
@@ -54,22 +55,26 @@ public class UserInfo extends javax.swing.JFrame {
     public static List<User> allUsers = new ArrayList<>();
     public static List<Client> cSockets = new ArrayList<>();
     public static ServerSocket sSocket;
-    private void ListAllUser(){
-       
+
+    private void ListAllUser() {
+        DefaultTableModel model = (DefaultTableModel) jUserTable.getModel();
+        model.setRowCount(0);
+        
         Server.allUsers = UserDAO.GetList();
         int number = Server.allUsers.size();
         System.out.println(number);
         int row = 0;
         int colum = 0;
-        for(int i=0;i<Server.allUsers.size();i++){
+        for (int i = 0; i < Server.allUsers.size(); i++) {
+            model.addRow(new Object[]{null, null, null});
             User a = Server.allUsers.get(i);
             String username = a.getUserName();
             String pass = a.getPassword();
             int Score = a.getScore();
             Timestamp visit = a.getLastlogin();
             String temp = visit.toString();
-            int j=1;
-            
+            int j = 1;
+
             jUserTable.setValueAt(username, row, colum);
             colum++;
             jUserTable.setValueAt(pass, row, colum);
@@ -79,9 +84,10 @@ public class UserInfo extends javax.swing.JFrame {
             jUserTable.setValueAt(temp, row, colum);
             colum++;
             row++;
-            colum=0;
+            colum = 0;
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -111,16 +117,7 @@ public class UserInfo extends javax.swing.JFrame {
 
         jUserTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "User", "Pass", "Score", "Last Visit"
@@ -222,78 +219,75 @@ public class UserInfo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-         this.dispose();
+        this.dispose();
     }//GEN-LAST:event_btnExitActionPerformed
-   
-    private void btnAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddUserActionPerformed
-  
-            String user = jtxtUser.getText();
-            String pass = jtxtPass.getText();
-            String score =  jtxtScore.getText();
-            int score_ = Integer.parseInt(score);
-           
-            java.util.Date date = new Date();
-            Object param = new java.sql.Timestamp(date.getTime());
 
-            
-            User us = new User(user, pass, score_,(Timestamp) param);
-            
-            boolean result = UserDAO.Add(us);
-            
-            if(result == true){
-                JOptionPane.showMessageDialog(null , "Insert success"); 
-                ListAllUser();
-            }
-            else{
-                JOptionPane.showMessageDialog(null , "Insert failed");
-            }
-          
-     
+    private void btnAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddUserActionPerformed
+
+        String user = jtxtUser.getText();
+        String pass = jtxtPass.getText();
+        String score = jtxtScore.getText();
+        int score_ = Integer.parseInt(score);
+
+        java.util.Date date = new Date();
+        Object param = new java.sql.Timestamp(date.getTime());
+
+
+        User us = new User(user, pass, score_, (Timestamp) param);
+
+        boolean result = UserDAO.Add(us);
+
+        if (result == true) {
+            JOptionPane.showMessageDialog(null, "Insert success");
+            ListAllUser();
+        } else {
+            JOptionPane.showMessageDialog(null, "Insert failed");
+        }
+
+
     }//GEN-LAST:event_btnAddUserActionPerformed
 
     private void jbtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnDeleteActionPerformed
-            String user = jtxtUser.getText();
-            boolean result = UserDAO.Delete(user);
-            if(result){
-                JOptionPane.showMessageDialog(null, "Delete successfully");             
-                ListAllUser();      
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "Wrong delete");
-            }
-           
-       
+        String user = jtxtUser.getText();
+        boolean result = UserDAO.Delete(user);
+        if (result) {
+            JOptionPane.showMessageDialog(null, "Delete successfully");
+            ListAllUser();
+        } else {
+            JOptionPane.showMessageDialog(null, "Wrong delete");
+        }
+
+
     }//GEN-LAST:event_jbtnDeleteActionPerformed
 
     private void jbtnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnUpdateActionPerformed
-        
-            String user = jtxtUser.getText();
-            String pass = jtxtPass.getText();
-            int score = Integer.parseInt(jtxtScore.getText());
-            String date = jtxtVisit.getText();
-            Timestamp ts = Timestamp.valueOf(date);
-            User us = new User(user, pass, score,ts);
-            boolean result = UserDAO.Update(us);
-            if(result){
-                JOptionPane.showMessageDialog(null, "Update successfully");
-                ListAllUser();      
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "Wrong Update");
-            }
-      
+
+        String user = jtxtUser.getText();
+        String pass = jtxtPass.getText();
+        int score = Integer.parseInt(jtxtScore.getText());
+        String date = jtxtVisit.getText();
+        Timestamp ts = Timestamp.valueOf(date);
+        User us = new User(user, pass, score, ts);
+        boolean result = UserDAO.Update(us);
+        if (result) {
+            JOptionPane.showMessageDialog(null, "Update successfully");
+            ListAllUser();
+        } else {
+            JOptionPane.showMessageDialog(null, "Wrong Update");
+        }
+
     }//GEN-LAST:event_jbtnUpdateActionPerformed
 
     private void jUserTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jUserTableMouseClicked
         int rowChoose = jUserTable.getSelectedRow();
 
-        String username =  (String)jUserTable.getValueAt(rowChoose, 0);
-        String pass = (String)jUserTable.getValueAt(rowChoose, 1);
-        int score = (int)jUserTable.getValueAt(rowChoose, 2);
-        String date = (String)jUserTable.getValueAt(rowChoose, 3);
+        String username = (String) jUserTable.getValueAt(rowChoose, 0);
+        String pass = (String) jUserTable.getValueAt(rowChoose, 1);
+        int score = (int) jUserTable.getValueAt(rowChoose, 2);
+        String date = (String) jUserTable.getValueAt(rowChoose, 3);
         jtxtUser.setText(username);
         jtxtPass.setText(pass);
-        jtxtScore.setText(""+score);
+        jtxtScore.setText("" + score);
         jtxtVisit.setText(date);
     }//GEN-LAST:event_jUserTableMouseClicked
 

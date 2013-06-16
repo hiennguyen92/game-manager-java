@@ -295,6 +295,15 @@ public class ManageTourForm extends javax.swing.JFrame {
         } else {
             Tour.nPlayer = Tour.nPlayer / 2;
             jcomboGiaiDau.removeItem(Tour.name);
+            Tour.isStart = true;
+            for (int i = 0; i < Server.cSockets.size(); i++) {
+                try {
+                    Server.cSockets.get(i).SendObj(2);
+                    Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
+                } catch (IOException ex) {
+                    Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             for (int i = 0; i < Tour.users.size(); i += 2) {
                 try {
                     Client client = Server.getClient(Tour.users.get(i).UserName);
@@ -316,6 +325,18 @@ public class ManageTourForm extends javax.swing.JFrame {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
         if (jcomboGiaiDau.getSelectedIndex() != -1) {
+            jcomboGiaiDau.removeItem(Tour.name);
+            jlistUser.setText("");
+            
+            for(int i = 0; i < Tour.users.size(); i++){
+                try {
+                    Client client = Server.getClient(Tour.users.get(i).UserName);
+                    client.SendObj(9);
+                } catch (IOException ex) {
+                    Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            Server.tournaments.remove(Tour);
             for (int i = 0; i < Server.cSockets.size(); i++) {
                 try {
                     Server.cSockets.get(i).SendObj(2);
@@ -324,8 +345,6 @@ public class ManageTourForm extends javax.swing.JFrame {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            jcomboGiaiDau.removeItem(Tour.name);
-            Server.tournaments.remove(Tour);
         } else {
             JOptionPane.showMessageDialog(this, "You haven't selected a tournament",
                     "Error", JOptionPane.WARNING_MESSAGE);
