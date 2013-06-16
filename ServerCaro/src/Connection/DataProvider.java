@@ -44,29 +44,24 @@ public class DataProvider {
         return null;
     }
 
-    public static List<User> ExecuteQuery(String sql) {
+    public static List<User> ExecuteQuery(String sql) throws SQLException {
         List<User> users = new ArrayList<User>();
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+        Connection connection = getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
 
-            while (resultSet.next()) {
-                String userName = resultSet.getString("UserName");
-                String password = resultSet.getString("Password");
-                int score = resultSet.getInt("Score");
-                Date lastVisit = resultSet.getDate("LastVisit");
+        while (resultSet.next()) {
+            String userName = resultSet.getString("UserName");
+            String password = resultSet.getString("Password");
+            int score = resultSet.getInt("Score");
+            Date lastVisit = resultSet.getDate("LastVisit");
 
-                User user = new User(userName, password, score, lastVisit);
+            User user = new User(userName, password, score, lastVisit);
 
-                users.add(user);
-            }
-            resultSet.close();
-            connection.close();
-
-        } catch (Exception ex) {
-            Logger.getLogger(DataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            users.add(user);
         }
+        resultSet.close();
+        connection.close();
         return users;
     }
 

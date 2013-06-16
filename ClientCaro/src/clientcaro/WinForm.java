@@ -23,6 +23,7 @@ public class WinForm extends javax.swing.JFrame {
     }
     public WinForm(String TourName, String Score){
         initComponents();
+        this.setTitle(TourName);
         Icon ii = new ImageIcon(getClass().getResource("winner.jpg"));
         jLabel1.setIcon(ii);
         lbTitle.setText("CONGRATULATION! YOU ARE THE CHAMPION");

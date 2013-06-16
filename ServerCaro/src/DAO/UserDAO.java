@@ -6,7 +6,10 @@ package DAO;
 
 import Connection.DataProvider;
 import DTO.User;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,10 +20,14 @@ public class UserDAO {
     
     public static List<User> GetList(){
         List<User> users = null;
-        sql = "select * from [USER]";
-        DataProvider dataProvider = new DataProvider();
-        users = DataProvider.ExecuteQuery(sql);
-        return users;
+        try {
+            sql = "select * from [USER]";
+            DataProvider dataProvider = new DataProvider();
+            users = DataProvider.ExecuteQuery(sql);
+            return users;
+        } catch (Exception ex) {
+            return null;
+        }
     }
     
     public static boolean Add(User user){

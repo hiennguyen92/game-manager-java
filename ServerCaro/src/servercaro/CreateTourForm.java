@@ -79,7 +79,7 @@ public class CreateTourForm extends javax.swing.JFrame {
             }
         });
 
-        jtxtName.setText("aaa");
+        jtxtName.setText("Summer");
 
         jtxtGiaiThuong.setText("12");
 
@@ -93,7 +93,7 @@ public class CreateTourForm extends javax.swing.JFrame {
             }
         });
 
-        jtxtPlayer.setText("12");
+        jtxtPlayer.setText("4");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel6.setText("Number of players");
