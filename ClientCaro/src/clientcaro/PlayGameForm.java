@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -54,9 +53,8 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             }
         }
     });
-    
 
-    public PlayGameForm(String UserDoiThu,boolean isInviter,String nameTour) {
+    public  PlayGameForm(String UserDoiThu,boolean isInviter,String nameTour) {
 
         initComponents();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -93,7 +91,6 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         listener.start();
     }
 
-    int result = JOptionPane.NO_OPTION;
     
     Runnable listen = new Runnable(){
         @Override
@@ -129,14 +126,14 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             timer.start();
                             jlblStatus.setText("Playing...");
                             if(caro.Type == 'X'){
-                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
+                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(getClass().getResource("x.png")));
                                 arrSquare[caro.i][caro.j].setValue('x');
                                 setButtonListener(true);
                                 ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
                                 EnemyWinner = StaticCheckWinner.CheckWin(arrSquare, 'x', caro.i, caro.j);
                             }
                             else{
-                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
+                                arrSquare[caro.i][caro.j].setIcon(new ImageIcon(getClass().getResource("o.png")));
                                 arrSquare[caro.i][caro.j].setValue('o');
                                 setButtonListener(true);
                                 ManageForm.listClientCaro.put(nameDoiThu, new Caro(null, null, 'E', 0, 0));
@@ -144,7 +141,14 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             }
                         } 
                     }
-                    Thread.sleep(100); 
+                    if(ManageForm.listChatPrivate.size()>0){
+                        DataType.ChatPrivate chat = (DataType.ChatPrivate)ManageForm.listChatPrivate.get(nameDoiThu);
+                        if(chat.NameEnemy != null){
+                            messageArea.append(chat.Chat);
+                            ManageForm.listChatPrivate.put(nameDoiThu, new DataType.ChatPrivate(null, null, null));
+                        }
+                    }
+                    
                     if (EnemyWinner) {
                         timer.stop();
                         EnemyWinner = false;
@@ -178,6 +182,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
+                    Thread.sleep(100); 
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(PlayGameForm.this, ex.getMessage(),
@@ -192,37 +197,36 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        
+    public synchronized void actionPerformed(ActionEvent e) {
         if (e.getSource() == chatField) {
-            String chat = chatField.getText();
+            btnSend.doClick();
         }
         for (int i = 0; i < Rows; i++) {
             for (int j = 0; j < Cols; j++) {
                 if(e.getSource() == arrSquare[i][j]){
                     setButtonListener(false);
                     if(PlayerType == 'x'){
-                        arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\x.png"));
+                        arrSquare[i][j].setIcon(new ImageIcon(getClass().getResource("x.png")));
                         arrSquare[i][j].setValue('x');
                         Winner = StaticCheckWinner.CheckWin(arrSquare, 'x', i, j);
                         try {
                             Client.SendObj(-1);
                             DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu,'X', i, j);
                             Client.SendObj(caro);
-                            messageArea.append(Client.cUser.UserName+":"+nameDoiThu+":"+i+","+j);
+                            //messageArea.append(Client.cUser.UserName+":"+nameDoiThu+":"+i+","+j);
                         } catch (IOException ex) {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                     else{
-                        arrSquare[i][j].setIcon(new ImageIcon(System.getProperty("user.dir")+"\\o.png"));
+                        arrSquare[i][j].setIcon(new ImageIcon(getClass().getResource("o.png")));
                         arrSquare[i][j].setValue('o');
                         Winner = StaticCheckWinner.CheckWin(arrSquare, 'o', i, j);
                         try {
                             Client.SendObj(-1);
                             DataType.Caro caro = new DataType.Caro(Client.cUser.UserName, nameDoiThu, 'O', i, j);
                             Client.SendObj(caro);
-                            messageArea.append(Client.cUser.UserName + ":" + nameDoiThu + ":" + i + "," + j);
+                            
                         } catch (IOException ex) {
                             Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
                         }             
@@ -235,8 +239,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         }  
     }
     
-    
-    
+
     public void setButtonListener(boolean isListener) {
         if (isListener) {
             for (int i = 0; i < Rows; i++) {
@@ -296,11 +299,9 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Message"));
 
-        messageArea.setEditable(false);
         messageArea.setColumns(20);
         messageArea.setLineWrap(true);
         messageArea.setRows(5);
-        messageArea.setPreferredSize(new java.awt.Dimension(165, 94));
         jScrollPane1.setViewportView(messageArea);
 
         jPGame.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -318,6 +319,11 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         );
 
         btnSend.setText("SEND");
+        btnSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendActionPerformed(evt);
+            }
+        });
 
         lblTime.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         lblTime.setText("- -");
@@ -344,7 +350,6 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
         jlblScore.setText("jLabel2");
 
-        jbtnClose.setText("Close");
         jbtnClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtnCloseActionPerformed(evt);
@@ -355,34 +360,36 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPGame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(chatField, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jlblStatus)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(lblTime))
-                                    .addComponent(jBtnStart))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jBtnOK)
-                                    .addComponent(jlblScore))))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jbtnClose)))
+                        .addComponent(jbtnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPGame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(chatField, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jlblStatus)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(lblTime))
+                                            .addComponent(jBtnStart))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jBtnOK)
+                                            .addComponent(jlblScore))))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -390,7 +397,7 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jbtnClose)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -439,8 +446,25 @@ public class PlayGameForm extends javax.swing.JFrame implements ActionListener {
 
     private void jbtnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnCloseActionPerformed
         // TODO add your handling code here:
+        
         this.dispose();
     }//GEN-LAST:event_jbtnCloseActionPerformed
+
+    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+        // TODO add your handling code here:
+        if (!chatField.getText().equals("")) {
+            try {
+                messageArea.append(Client.cUser.UserName+": "+chatField.getText()+"\n");
+                DataType.ChatPrivate chat = new DataType.ChatPrivate(Client.cUser.UserName, nameDoiThu, Client.cUser.UserName+": "+chatField.getText()+"\n");
+                Client.SendObj(200);
+                Client.SendObj(chat);
+                chatField.setText("");
+                System.out.println("\n"+200 + chat.UserName +chat.NameEnemy + chat.Chat);
+            } catch (IOException ex) {
+                Logger.getLogger(PlayGameForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnSendActionPerformed
 
     /**
      * @param args the command line arguments

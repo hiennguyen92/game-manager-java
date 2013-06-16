@@ -4,6 +4,7 @@
  */
 package clientcaro;
 
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -151,7 +152,7 @@ public class RegisterForm extends javax.swing.JFrame {
                     tbPassword.setText("");
                     tbConfirmPassword.setText("");
                 }
-            } catch (Exception ex) {
+            } catch (IOException | HeadlessException ex) {
                 Logger.getLogger(RegisterForm.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

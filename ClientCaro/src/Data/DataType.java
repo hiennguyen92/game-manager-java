@@ -51,4 +51,15 @@ public class DataType {
    }
  };
  
+ public static class ChatPrivate implements Serializable{
+     public String UserName;
+     public String NameEnemy;
+     public String Chat;
+     public ChatPrivate(String name, String enemy,String chat){
+         this.UserName = name;
+         this.NameEnemy = enemy;
+         this.Chat = chat;
+     }
+ };
+ 
 }

@@ -5,8 +5,6 @@
 package servercaro;
 
 import DAO.UserDAO;
-import DTO.Tournament;
-import DTO.User;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
