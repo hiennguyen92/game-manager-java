@@ -4,6 +4,7 @@
  */
 package servercaro;
 
+import DAO.UserDAO;
 import DTO.Tournament;
 import DTO.User;
 import Data.DataType.*;
@@ -199,6 +200,7 @@ public class Client extends Thread {
                         Client clientWin = Server.getClient(KQTemp.UserName);
                         Client clientLose = Server.getClient(KQTemp.NameEnemy);
                         clientWin.cUser.setScore(clientWin.cUser.getScore() + 1);
+                        UserDAO.Update(cUser);
                         isPlaying = false;
                         clientLose.isPlaying = false;
                         for (int i = 0; i < Server.cSockets.size(); i++) {
@@ -224,6 +226,9 @@ public class Client extends Thread {
                             cUser.Score += Tour.prize;
                             SendObj(10);
                             SendMsg(String.valueOf(Tour.prize));
+                            SendObj(0);
+                            SendObj(cUser.Score);
+                            UserDAO.Update(cUser);
                         }
                         //các cặp khác xong hết thì bắt đầu chia cặp đánh tiếp
                         else if(Tour.users.size() == Tour.nPlayer){

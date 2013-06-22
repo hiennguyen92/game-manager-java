@@ -32,12 +32,41 @@ public class ManageForm extends javax.swing.JFrame {
     static Map<String, Object> listChatPrivate; //thông tin chat private
     static int offset = ' ';
     static Object mPauseLock = new Object();
+    static List<String> userNames;
 
     /**
      * Creates new form ManageForm
      */
     public ManageForm() {
-        this.listen =  new  Runnable() {
+        initComponents();
+        ShowAvatar();
+        this.setTitle(Client.cUser.UserName);
+        listUsers = new Vector<>();
+        listTours = new Vector<>();
+        listClientCaro = new HashMap<>();
+        listClientStatus = new HashMap<>();
+        listChatPrivate = new HashMap<>();
+        Thread listener = new Thread(listen);
+        listener.start();
+         
+        Thread updateGraphics = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        jlblScore.setText("Score: " + Client.cUser.Score);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+            }
+        });
+        updateGraphics.start();
+    }
+    
+    Runnable listen = new Runnable() {
         @Override
         public void run() {
             while (isRun) {
@@ -48,6 +77,9 @@ public class ManageForm extends javax.swing.JFrame {
                             String[] Info = Client.GetMsg().split(":");
                             Client.cUser.UserName = Info[0];
                             Client.cUser.Score = Integer.parseInt(Info[1]);
+                            break;
+                        case 0:
+                            Client.cUser.Score = (int) Client.GetObj();
                             break;
                         //nhận danh sách người onl
                         case 1:
@@ -108,6 +140,19 @@ public class ManageForm extends javax.swing.JFrame {
                                 new WaitingForm(msg[1]).setVisible(true);
                             }
                             break;
+                        case 7:
+                            userNames = (List<String>) Client.GetObj();
+                            Thread.sleep(500);
+                            offset = -10;
+                            break;
+                        case 8:
+                            answer = (Answer) Client.GetObj();
+                            listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
+                            listClientStatus.put(answer.UserName, "NULL");
+                            listChatPrivate.put(answer.UserName, new ChatPrivate(null, null, null));
+                            new PlayGameForm(answer.UserName, answer.IsSecond, answer.NameTour).setVisible(true);
+                            Thread.sleep(500);
+                            break;
                         //thông tin caro
                         case -1:
                             Caro caro = (Caro) Client.GetObj();
@@ -124,8 +169,7 @@ public class ManageForm extends javax.swing.JFrame {
                             ChatPrivate chat = (ChatPrivate)Client.GetObj();
                             listChatPrivate.put(chat.NameEnemy, chat);
                             break;
-                        default:                            
-                            WaitingForm.resume();
+                        default:
                             synchronized (mPauseLock) {
                                 mPauseLock.wait();
                             }
@@ -139,43 +183,12 @@ public class ManageForm extends javax.swing.JFrame {
                 }
             }
         }
-    };
-        initComponents();
-        ShowAvatar();
-        this.setTitle(Client.cUser.UserName);
-        listUsers = new Vector<>();
-        listTours = new Vector<>();
-        listClientCaro = new HashMap<>();
-        listClientStatus = new HashMap<>();
-        listChatPrivate = new HashMap<>();
-        Thread listener = new Thread(listen);
-        listener.start();
-         
-        Thread updateGraphics = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        jlblScore.setText("Score: " + Client.cUser.Score);
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(ManageForm.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-            }
-        });
-        updateGraphics.start();
-    }
-    
-    
-    
+    };    
 
     private void ShowAvatar() {
         Icon ii = new ImageIcon(getClass().getResource("images.jpg"));
         jLabelImage.setIcon(ii);
     }
-    Runnable listen;
 
     public static void resume() {
         synchronized (mPauseLock) {

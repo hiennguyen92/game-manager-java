@@ -326,6 +326,14 @@ public class ManageTourForm extends javax.swing.JFrame {
                     Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            for (int i = 0; i < Server.cSockets.size(); i++) {
+                try {
+                    Server.cSockets.get(i).SendObj(2);
+                    Server.cSockets.get(i).SendObj(Server.getAllToursStatus());
+                } catch (IOException ex) {
+                    Logger.getLogger(ManageTourForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             Tour.users.clear();
         }
     }//GEN-LAST:event_btnStartActionPerformed

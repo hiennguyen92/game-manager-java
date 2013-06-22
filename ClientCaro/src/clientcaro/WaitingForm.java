@@ -20,7 +20,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class WaitingForm extends javax.swing.JFrame {
 
-    public static Object mPauseLock = new Object();
     public String TourName;
     public boolean isRun = true;
 
@@ -51,34 +50,23 @@ public class WaitingForm extends javax.swing.JFrame {
                     switch (offset) {
                         //nhận danh sách người chơi
                         case 7:
-                            List<String> userNames = (List<String>) Client.GetObj();
                             int nRow = 0;
                             DefaultTableModel model = (DefaultTableModel) tbUsers.getModel();
                             model.setRowCount(0);
-                            for (int i = 0; i < userNames.size(); i += 2) {
+                            for (int i = 0; i < ManageForm.userNames.size(); i += 2) {
                                 model.addRow(new Object[]{null, null, null});
                                 tbUsers.setValueAt(nRow + 1, nRow, 0);
-                                tbUsers.setValueAt(userNames.get(i), nRow, 1);
-                                if (i + 1 < userNames.size()) {
-                                    tbUsers.setValueAt(userNames.get(i + 1), nRow, 2);
+                                tbUsers.setValueAt(ManageForm.userNames.get(i), nRow, 1);
+                                if (i + 1 < ManageForm.userNames.size()) {
+                                    tbUsers.setValueAt(ManageForm.userNames.get(i + 1), nRow, 2);
                                 }
                                 nRow++;
                             }
-                            ManageForm.resume();
-                            synchronized (mPauseLock) {
-                                mPauseLock.wait();
-                            }
                             break;
                         //nhận báo hiệu bắt đầu giải đấu và đấu với 1 người chỉ định
-                        case 8:
-                            DataType.Answer answer = (DataType.Answer) Client.GetObj();
-                            ManageForm.listClientCaro.put(answer.UserName, new Caro(null, null, 'E', 0, 0));
-                            ManageForm.listClientStatus.put(answer.UserName, "NULL");
-                            ManageForm.listChatPrivate.put(answer.UserName, new DataType.ChatPrivate(null, null, null));
-                            new PlayGameForm(answer.UserName, answer.IsSecond, answer.NameTour).setVisible(true);
+                        case 8:                            
                             WaitingForm.this.setVisible(false);
                             isRun = false;
-                            ManageForm.resume();
                             break;
                         //nhận báo hiệu xóa giải đấu
                         case 9:
@@ -95,12 +83,6 @@ public class WaitingForm extends javax.swing.JFrame {
                             ManageForm.resume();
                             isRun = false;
                             break;
-                        default:
-                            ManageForm.resume();
-                            synchronized (mPauseLock) {
-                                mPauseLock.wait();
-                            }
-
                     }
 
                 } catch (Exception ex) {
@@ -109,12 +91,6 @@ public class WaitingForm extends javax.swing.JFrame {
             }
         }
     };
-
-    public static void resume() {
-        synchronized (mPauseLock) {
-            mPauseLock.notifyAll();
-        }
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
